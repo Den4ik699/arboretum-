@@ -226,6 +226,11 @@ a:hover {
    margin-top: 175px;
 }
 
+.auth{
+   position: absolute;
+   z-index: 3;
+}
+
 /* === Sign in Form === */
 #signin {
    height: 90px;
@@ -327,4 +332,8 @@ a:hover {
 .fa {
    position: relative;
    top: -35px;
+}
+
+.parag{
+   color: white;
 }

@@ -1,9 +1,12 @@
 <div class="auth">
     <h1>Sign In Form</h1>
 <div id="wrapper">
-    <form id="signin" method="" action="" autocomplete="off">
+    <form id="signin" method="get" action="javascript:void(0)" autocomplete="off">
         <input type="text" id="user" name="user" placeholder="username" />
         <input type="password" id="pass" name="pass" placeholder="password" />
-        <button type="submit" style="font-size:25px" >&#xf0da; <i class="fa fa-caret-right"></i></button>
+        <button onclick="startAuth()" type="submit" style="font-size:25px" >&#xf0da; <i class="fa fa-caret-right" id ='btn-auth'></i></button>
     </form>
 </div>
+</div>
+
+<script src="authorization.js"></script>

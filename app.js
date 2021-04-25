@@ -4,36 +4,16 @@ const expressHbs = require("express-handlebars");
 const app = express()
 const jsonParser = express.json()
 var Connection = require('tedious').Connection;
-var config = {
-    server: 'localhost',
-    authentication: {
-        type: 'default',
-        options: {
-            userName: 'sa',
-            password: '123'
-        }
-    },
-    options: {
-        port: 1433,
-        database: 'Dendropark',
-        trustServerCertificate: true,
-        rowCollectionOnDone: true,
-        rowCollectionOnRequestCompletion: true
-    }
-};
-var connection = new Connection(config);
+
+var connection;
 var Request = require('tedious').Request;
 var TYPES = require('tedious').TYPES;
-connection.connect();
 
-connection.on('connect', function (err) {
-    if (err) return console.log(err.message)
-    app.listen(3000, function (err) {
-        if (err) return console.log(err)
-        else console.log('Сервер запущен')
-    })
-    console.log("База даных подключена");
-});
+app.listen(3000, function (err) {
+    if (err) return console.log(err)
+    else console.log('Сервер запущен')
+})
+
 
 app.set("view engine", "hbs")
 app.set("views", "public/views")
@@ -96,6 +76,18 @@ app.get("/plantReplacement", function (request, response) {
 app.get("/writeOffCertificates", function (request, response) {
     response.render("writeOffCertificates", {
         title: `Акты на списание`
+    })
+})
+
+app.get("/countOfPlants", function (request, response) {
+    response.render("countOfPlants", {
+        title: `Поиск растения по жизненной форме`
+    })
+})
+
+app.get("/countOfTeachers", function (request, response) {
+    response.render("countOfTeachers", {
+        title: `Поиск сотрудников по должности`
     })
 })
 
@@ -237,7 +229,7 @@ app.get('/api/writeOffCertificates', function (req, res) {
     connection.execSql(request);
 })
 
-
+//<==================================== USERS_OF_DENDROPARK ========================================>
 app.delete("/api/users/:id", function (req, res) {
     const idFind = req.params.id;
     request = new Request("DELETE [Users of dendropark] WHERE [Users of dendropark].[ID] = @id", function (err, count, rows) {
@@ -322,7 +314,7 @@ app.post("/api/createUser", jsonParser, function (req, res) {
     connection.callProcedure(request);
 });
 
-
+//<==================================== OFFICIALS ========================================>
 app.post("/api/createOfficial", jsonParser, function (req, res) {
     let tabNum, fio, rank, respons;
     tabNum = req.body['Табельный номер'];
@@ -349,7 +341,6 @@ app.post("/api/createOfficial", jsonParser, function (req, res) {
     request.addParameter('workRespons', TYPES.NVarChar, respons);
     connection.callProcedure(request);
 });
-
 
 app.delete("/api/officials/:tubnum", function (req, res) {
     const idFind = req.params.tubnum;
@@ -403,3 +394,86 @@ app.put("/api/editOfficial", jsonParser, function (req, res) {
     request.addParameter('workRespons', TYPES.NVarChar, respons);
     connection.callProcedure(request);
 })
+
+
+
+
+app.post("/api/countOfPlants", jsonParser, function (req, res) {
+    const params = [
+        ['life', TYPES.NVarChar]
+    ]
+    postPutApi(req, res, 'CountPlants', params, true)
+});
+
+app.post("/api/countOfTeachers", jsonParser, function (req, res) {
+    const params = [
+        ['rank', TYPES.NVarChar]
+    ]
+    postPutApi(req, res, 'CountOfTeachers', params, true)
+});
+
+function postPutApi(req, res, procedure, params, asArr) {
+    let result;
+    request = new Request(procedure, function (err, count, rows) {
+        if (err) {
+            return console.error(err);
+        }
+        result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })
+        if(!asArr) {
+            result = result[0]
+        }
+        res.send(JSON.stringify(result))
+    });
+    for (const param of params) {
+        request.addParameter(param[0], param[1], req.body[param[0]]);
+    }
+    connection.callProcedure(request);
+    connection.on('infoMessage', function(info) {
+        if(!info){
+
+        } else {
+            console.log('info =========================================');
+            console.log(info);
+        }
+    })
+}
+
+
+
+app.post("/api/authorization", jsonParser, function (req, res) {
+    console.log('asdasdaasdasd')
+    console.log(req.body)
+    let config = {
+        server: 'localhost',
+        authentication: {
+            type: 'default',
+            options: {
+                userName: req.body.username,
+                password: req.body.password
+            }
+        },
+        options: {
+            port: 1433,
+            database: 'Dendropark',
+            trustServerCertificate: true,
+            rowCollectionOnDone: true,
+            rowCollectionOnRequestCompletion: true
+        }
+    };
+    connection = new Connection(config);
+    connection.connect();
+    connection.on('connect', function (err) {
+        if (err) return console.log(err.message)
+        else {
+            console.log("База даных подключена");
+            res.send(JSON.stringify({flag: true}))
+        }
+    });
+    // connection.close();
+    // connection.on('error', () => {})
+});
