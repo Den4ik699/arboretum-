@@ -27,7 +27,6 @@ function head(key) {
 }
 
 
-
 async function createOfficial() {
     const modal = document.querySelector('.decor');
     const inpTabNum = document.querySelector('#inpTabNum'),
@@ -52,8 +51,9 @@ async function createOfficial() {
         hideModal();
     })
 
-    inpBtnAdd.addEventListener('click', async () => {
-
+    inpBtnAdd.addEventListener('click', async (e) => {
+        e.preventDefault();
+        hideModal();
         const response = await fetch("/api/createOfficial", {
             method: "POST",
             headers: {
@@ -73,7 +73,6 @@ async function createOfficial() {
         }
     })
 }
-
 
 
 async function editOfficial(tubnum) {
@@ -113,9 +112,6 @@ async function editOfficial(tubnum) {
 }
 
 
-
-
-
 async function deleteOfficial(tabNum) {
     const response = await fetch("/api/officials/" + tabNum, {
         method: "DELETE",
@@ -128,10 +124,6 @@ async function deleteOfficial(tabNum) {
         document.querySelector("tr[data-rowid='" + tabNum + "']").remove();
     }
 }
-
-
-
-
 
 
 function row(request) {
@@ -181,4 +173,5 @@ function row(request) {
 
     return tr;
 }
+
 GetOfficials()

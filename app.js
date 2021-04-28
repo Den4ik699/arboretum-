@@ -91,6 +91,30 @@ app.get("/countOfTeachers", function (request, response) {
     })
 })
 
+app.get("/listOfStudExcursion", function (request, response) {
+    response.render("listOfStudExcursion", {
+        title: `Поиск студентов, которые посетили определенную экскурсию`
+    })
+})
+
+app.get("/listOfStudExcursion", function (request, response) {
+    response.render("listOfStudExcursion", {
+        title: `Поиск студентов, которые посетили определенную экскурсию`
+    })
+})
+
+app.get("/decomissPlants", function (request, response) {
+    response.render("decomissPlants", {
+        title: `Поиск растений списанных за день и их количество`
+    })
+})
+
+app.get("/countOfOfficials", function (request, response) {
+    response.render("countOfOfficials", {
+        title: `Количество должностей в дендропарке`
+    })
+})
+
 app.get('/api/usersOfDendropark', function (req, res) {
     request = new Request("SELECT * FROM [Users of dendropark]", function (err, count, rows) {
         console.log(rows);
@@ -412,9 +436,30 @@ app.post("/api/countOfTeachers", jsonParser, function (req, res) {
     postPutApi(req, res, 'CountOfTeachers', params, true)
 });
 
+app.post("/api/decomissPlants", jsonParser, function (req, res) {
+    const params = [
+        ['date', TYPES.Date]
+    ]
+    postPutApi(req, res, 'DecommissPlants', params, true)
+});
+
+app.post("/api/listOfStudExcursion", jsonParser, function (req, res) {
+    const params = [
+        ['numex', TYPES.Int]
+    ]
+    postPutApi(req, res, 'listOfexOfstud', params, true)
+});
+
+app.post("/api/countOfOfficials", jsonParser, function (req, res) {
+    const params = [
+        ['rank', TYPES.NVarChar]
+    ]
+    postPutApi(req, res, 'CountOfOfficials', params, true)
+});
+
 function postPutApi(req, res, procedure, params, asArr) {
     let result;
-    request = new Request(procedure, function (err, count, rows) {
+    let request = new Request(procedure, function (err, count, rows) {
         if (err) {
             return console.error(err);
         }
@@ -477,3 +522,176 @@ app.post("/api/authorization", jsonParser, function (req, res) {
     // connection.close();
     // connection.on('error', () => {})
 });
+
+
+//==========================Представления========================>
+
+function getApi(req, res, representation){
+    let request = new Request(`SELECT * FROM ${representation}`, function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })
+        console.log(result)
+        res.send(JSON.stringify(result));
+    });
+    request.on('requestCompleted', function () {
+        console.log(`запрос к представлению ${representation} завершён`)
+    });
+    connection.execSql(request);
+}
+
+app.get("/api/showTeacher", jsonParser, function (req, res) {
+    getApi(req, res, 'showTeacher')
+});
+
+app.get("/showTeacher", function (request, response) {
+    response.render("teachersRepresent", {
+        title: `Количество преподавателей`
+    })
+})
+
+app.get("/goalOb", function (request, response) {
+    response.render("goalOb", {
+        title: `Цели использования материалов дендропарка`
+    })
+})
+
+app.get("/api/goalOb", jsonParser, function (req, res) {
+    getApi(req, res, 'infoTarget')
+});
+
+app.get("/excursionInEurope", function (request, response) {
+    response.render("excursionInEurope", {
+        title: `Экскурсии проведенные в регионе "Европа"`
+    })
+})
+
+app.get("/api/excursionInEurope", jsonParser, function (req, res) {
+    getApi(req, res, 'infoAboutRegion')
+});
+
+app.get("/infoAboutNameOfExcursion", function (request, response) {
+    response.render("infoAboutNameOfExcursion", {
+        title: `Экскурсии, название которых “О дендропарке”`
+    })
+})
+
+app.get("/api/infoAboutNameOfExcursion", jsonParser, function (req, res) {
+    getApi(req, res, 'infoAboutNameOfExcursion')
+});
+
+app.get("/infoDateLanding", function (request, response) {
+    response.render("infoDateLanding", {
+        title: `Информация о растении, который было посажено с 2009 до текущего года`
+    })
+})
+
+app.get("/api/infoDateLanding", jsonParser, function (req, res) {
+    getApi(req, res, 'infoDateLanding')
+});
+
+app.get("/infAboutSubstance", function (request, response) {
+    response.render("infAboutSubstance", {
+        title: `Растения, которые обрабатываются химическим веществом “Хорус”`
+    })
+})
+
+app.get("/api/infAboutSubstance", jsonParser, function (req, res) {
+    getApi(req, res, 'infAboutSubstance')
+});
+
+app.get("/personWhoSpentExcurs", function (request, response) {
+    response.render("personWhoSpentExcurs", {
+        title: `Экскурсии, которые провела преподаватель Мажугова Т.В`
+    })
+})
+
+app.get("/api/personWhoSpentExcurs", jsonParser, function (req, res) {
+    getApi(req, res, 'personWhoSpentExcurs')
+});
+
+app.get("/infAboutReg", function (request, response) {
+    response.render("infAboutReg", {
+        title: `Регионы`
+    })
+})
+
+app.get("/api/infAboutReg", jsonParser, function (req, res) {
+    getApi(req, res, 'infAboutReg')
+});
+
+app.get("/infoAboutStudents", function (request, response) {
+    response.render("infoAboutStudents", {
+        title: `Все учащиеся колледжа`
+    })
+})
+
+app.get("/api/infoAboutStudents", jsonParser, function (req, res) {
+    getApi(req, res, 'infoAboutStudents')
+});
+
+app.get("/infoAboutReplace", function (request, response) {
+    response.render("infoAboutReplace", {
+        title: `Замененные растения`
+    })
+})
+
+app.get("/api/infoAboutReplace", jsonParser, function (req, res) {
+    getApi(req, res, 'infoAboutReplace')
+});
+
+app.get("/locationofplant", function (request, response) {
+    response.render("locationofplant", {
+        title: `Полная информация о растениях, которые находятся в регионе “Сибирь и Дальний Восток`
+    })
+})
+
+app.get("/api/locationofplant", jsonParser, function (req, res) {
+    getApi(req, res, 'locationofplant')
+});
+
+app.get("/classOfPlants", function (request, response) {
+    response.render("classOfPlants", {
+        title: `Растения, которые относятся к отделу Голосеменные`
+    })
+})
+
+app.get("/api/classOfPlants", jsonParser, function (req, res) {
+    getApi(req, res, 'classOfPlants')
+});
+
+app.get("/fioOfteacher", function (request, response) {
+    response.render("fioOfteacher", {
+        title: `Работники колледжа, ФИО которыъ начинается на “Ч”`
+    })
+})
+
+app.get("/api/fioOfteacher", jsonParser, function (req, res) {
+    getApi(req, res, 'fioOfteacher')
+});
+
+app.get("/positionOnDiagram", function (request, response) {
+    response.render("positionOnDiagram", {
+        title: `Экскурсии, регион которых на схеме находится на Западе`
+    })
+})
+
+app.get("/api/positionOnDiagram", jsonParser, function (req, res) {
+    getApi(req, res, 'positionOnDiagram')
+});
+
+app.get("/fullInfoAboutSubstances", function (request, response) {
+    response.render("fullInfoAboutSubstances", {
+        title: `Полная информация о химических веществах`
+    })
+})
+
+app.get("/api/fullInfoAboutSubstances", jsonParser, function (req, res) {
+    getApi(req, res, 'fullInfoAboutSubstances')
+});
+
+//=====================================>>>>>>>

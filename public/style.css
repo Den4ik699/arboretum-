@@ -6,7 +6,7 @@ body {
 
 .main {
    background-color: rgb(33, 37, 41);
-   height: 100%;
+   width: 70%;
 }
 
 
@@ -21,22 +21,36 @@ body {
 }
 
 
-.navbar {
-   position: sticky;
-   top: 0;
-   z-index: 2;
-}
+/*.navbar {*/
+/*   position: sticky;*/
+/*   top: 0;*/
+/*   z-index: 2;*/
+/*}*/
 
 .container-fluid {
    display: flex;
+   position: relative;
+   width: 100%;
+   /*position: absolute;*/
+   /*z-index: 4;*/
 }
 
 .table{
    position: absolute;
 }
 
+/*.asd{*/
+/*   position: absolute;*/
+/*   z-index: 7;*/
+/*}*/
+
+
 .col-sm-1 {
    padding-left: 0px;
+   display: block;
+   /*position: absolute;*/
+   /*z-index: 1;*/
+   /*width: 30%;*/
 }
 
 
@@ -62,8 +76,6 @@ a:hover {
 
 
 /* ======================== */
-
-
 .decor {
    display: none;
    position: fixed;
@@ -206,27 +218,27 @@ a:hover {
 /* authenticationForm */
 
 .auth {
+   display: block;
    font-family: 'Inconsolata', monospace;
    background: rgb(52, 56, 61);
-}
-
-.auth {
    color: rgb(255, 255, 255);
    margin: 20px auto 0;
-   width: 200px;
+   width: 100%;
    text-align: center;
+   position: absolute;
 }
 
 #wrapper {
-   position: absolute;
+   background: rgb(52, 56, 61);
    width: 320px;
    left: 50%;
-   margin-left: -160px;
+   margin-left: 530px;
    top: 50%;
    margin-top: 175px;
 }
 
 .auth{
+   height: 100%;
    position: absolute;
    z-index: 3;
 }

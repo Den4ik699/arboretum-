@@ -28,8 +28,6 @@ function head(key){
 
 function row(request) {
 
-
-
     const tr = document.createElement("tr");
     tr.setAttribute("data-rowid", request['Номенклатурный номер']);
 

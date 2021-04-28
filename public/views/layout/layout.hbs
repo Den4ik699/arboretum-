@@ -15,6 +15,7 @@
 </head>
 
 <body>
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,10 +30,21 @@
                         Регламентированные запросы
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Something else here</a>
+                        <a class="dropdown-item" href="/showTeacher">Вывод преподавателей</a>
+                        <a class="dropdown-item" href="/goalOb">Вывод пользователей, цель использования материалов дендропарка которых начинаются с «Об»</a>
+                        <a class="dropdown-item" href="/excursionInEurope">Экскурсии проведенные в регионе "Европа"</a>
+                        <a class="dropdown-item" href="/infoAboutNameOfExcursion">Экскурсии, название которых “О дендропарке”</a>
+                        <a class="dropdown-item" href="/infoDateLanding">Информация о растении, которое было посажено с 2009 до текущего года”</a>
+                        <a class="dropdown-item" href="/infAboutSubstance">Растения, которые обрабатываются химическим веществом “Хорус”</a>
+                        <a class="dropdown-item" href="/personWhoSpentExcurs">Экскурсии, которые провел определенный преподаватель</a>
+                        <a class="dropdown-item" href="/infAboutReg">Название региона не начинается на “Е” и не заканчивается на ‘а’</a>
+                        <a class="dropdown-item" href="/infoAboutStudents">Вывод всех учащихся колледжа</a>
+                        <a class="dropdown-item" href="/infoAboutReplace">Список замененных растений, которые начинаются на ‘Л’, а также их причина замены</a>
+                        <a class="dropdown-item" href="/locationofplant">Полная информация о растениях, которые находятся в регионе “Сибирь и Дальний Восток</a>
+                        <a class="dropdown-item" href="/classOfPlants">Растения, которые относятся к отделу Голосеменные</a>
+                        <a class="dropdown-item" href="/fioOfteacher">Работники колледжа, ФИО которыъ начинается на “Ч”</a>
+                        <a class="dropdown-item" href="/positionOnDiagram">Экскурсии, регион которых на схеме находится на Западе</a>
+                        <a class="dropdown-item" href="/fullInfoAboutSubstances">Полная информация о химических веществах, которые заканчиваются на “а”</a>
                     </div>
                 </li>
 
@@ -44,6 +56,10 @@
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="/countOfPlants">Поиск растений по жизненной форме</a>
                         <a class="dropdown-item" href="/countOfTeachers">Поиск сотрудников по должности</a>
+                        <a class="dropdown-item" href="/listOfStudExcursion">Вывод студентов, которые посетили определенную экскурсию</a>
+                        <a class="dropdown-item" href="/decomissPlants">Количество списанных растений за день</a>
+                        <a class="dropdown-item" href="/decomissPlants">Вывод региона и название экскурсий, проведенные в данном регионе</a>
+                        <a class="dropdown-item" href="/countOfOfficials">Количество определенных должностей в дендропарке</a>
                         <a class="dropdown-item" href="#">Another action</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#">Something else here</a>
@@ -72,7 +88,6 @@
 
     </div>
     <script>
-
         function up() {
             let top = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
             if (top > 0) {
@@ -82,6 +97,8 @@
             return false;
         }
     </script>
+
+<script src="authorization.js"></script>
 </body>
 
 </html>

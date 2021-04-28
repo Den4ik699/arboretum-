@@ -87,8 +87,9 @@ async function CreateUser() {
         hideModal();
     })
 
-    inpBtnAdd.addEventListener('click', async () => {
-
+    inpBtnAdd.addEventListener('click', async (e) => {
+    e.preventDefault();
+        hideModal();
         const response = await fetch("/api/createUser", {
             method: "POST",
             headers: {

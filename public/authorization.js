@@ -1,8 +1,8 @@
 
 const login = document.querySelector('#user'),
       password = document.querySelector('#pass'),
-      authForm = document.querySelector('.auth');
-      //btnAuth = document.querySelector('#'btn-auth')
+      authForm = document.querySelector('.auth'),
+      nav = document.querySelector('.col-sm-1');
 
 async function startAuth() {
     const data = {
@@ -17,8 +17,9 @@ async function startAuth() {
         body: JSON.stringify(data)
     });
 
-    if (response.ok === true) {
-        console.log('asdasdasd');
+    if ((await response).status == 200) {
         authForm.style.display = 'none';
+        nav.style.display = 'block';
+        console.log("hello");
     }
 }
