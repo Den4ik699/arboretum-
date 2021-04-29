@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;800&display=swap" rel="stylesheet">
@@ -16,87 +16,128 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+<a href="/"></a>
+
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Регламентированные запросы
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/showTeacher">Вывод преподавателей</a>
-                        <a class="dropdown-item" href="/goalOb">Вывод пользователей, цель использования материалов дендропарка которых начинаются с «Об»</a>
-                        <a class="dropdown-item" href="/excursionInEurope">Экскурсии проведенные в регионе "Европа"</a>
-                        <a class="dropdown-item" href="/infoAboutNameOfExcursion">Экскурсии, название которых “О дендропарке”</a>
-                        <a class="dropdown-item" href="/infoDateLanding">Информация о растении, которое было посажено с 2009 до текущего года”</a>
-                        <a class="dropdown-item" href="/infAboutSubstance">Растения, которые обрабатываются химическим веществом “Хорус”</a>
-                        <a class="dropdown-item" href="/personWhoSpentExcurs">Экскурсии, которые провел определенный преподаватель</a>
-                        <a class="dropdown-item" href="/infAboutReg">Название региона не начинается на “Е” и не заканчивается на ‘а’</a>
-                        <a class="dropdown-item" href="/infoAboutStudents">Вывод всех учащихся колледжа</a>
-                        <a class="dropdown-item" href="/infoAboutReplace">Список замененных растений, которые начинаются на ‘Л’, а также их причина замены</a>
-                        <a class="dropdown-item" href="/locationofplant">Полная информация о растениях, которые находятся в регионе “Сибирь и Дальний Восток</a>
-                        <a class="dropdown-item" href="/classOfPlants">Растения, которые относятся к отделу Голосеменные</a>
-                        <a class="dropdown-item" href="/fioOfteacher">Работники колледжа, ФИО которыъ начинается на “Ч”</a>
-                        <a class="dropdown-item" href="/positionOnDiagram">Экскурсии, регион которых на схеме находится на Западе</a>
-                        <a class="dropdown-item" href="/fullInfoAboutSubstances">Полная информация о химических веществах, которые заканчиваются на “а”</a>
-                    </div>
-                </li>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
 
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Хранимые процедуры
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/countOfPlants">Поиск растений по жизненной форме</a>
-                        <a class="dropdown-item" href="/countOfTeachers">Поиск сотрудников по должности</a>
-                        <a class="dropdown-item" href="/listOfStudExcursion">Вывод студентов, которые посетили определенную экскурсию</a>
-                        <a class="dropdown-item" href="/decomissPlants">Количество списанных растений за день</a>
-                        <a class="dropdown-item" href="/decomissPlants">Вывод региона и название экскурсий, проведенные в данном регионе</a>
-                        <a class="dropdown-item" href="/countOfOfficials">Количество определенных должностей в дендропарке</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </nav>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Таблицы
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/UsersOfDendropark">Пользователи дендропарка</a>
+                    <a class="dropdown-item" href="/Officials">Должностные лица</a>
+                    <a class="dropdown-item" href="/plants">Растения</a>
+                    <a class="dropdown-item" href="/chemicalSubstance">Химические вещества</a>
+                    <a  class="dropdown-item" href="/studyExcursions">Учебные экскурсии</a>
+                    <a class="dropdown-item" href="/excursionReports">Отчеты о проведенных экскурсиях</a>
+                    <a class="dropdown-item" href="/plantReplacement">Заменённые растения</a>
+                    <a class="dropdown-item" href="/writeOffCertificates">Акты на списание</a>
+                </div>
+            </li>
 
-    <div class="container-fluid">
-        <div class="col-sm-1">
-            <ul class="nav nav-sidebar">
-                <li class="table-item"><a href="/">Главная</a></li>
-                <li class="table-item"><a href="/UsersOfDendropark">Пользователи дендропарка</a></li>
-                <li class="table-item"><a href="/Officials">Должностные лица</a></li>
-                <li class="table-item"><a href="/plants">Растения</a></li>
-                <li class="table-item"><a href="/chemicalSubstance">Химические вещества</a></li>
-                <li class="table-item"><a href="/studyExcursions">Учебные экскурсии</a></li>
-                <li class="table-item"><a href="/excursionReports">Отчеты о проведенных экскурсиях</a></li>
-                <li class="table-item"><a href="/plantReplacement">Заменённые растения</a></li>
-                <li class="table-item"><a href="/writeOffCertificates">Акты на списание</a></li>
-            </ul>
-        </div>
 
-        <div class="col-md-11 main">{{{body}}}</div>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Регламентированные запросы
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/showTeacher">Вывод преподавателей</a>
+                    <a class="dropdown-item" href="/goalOb">Вывод пользователей, цель использования материалов
+                        дендропарка которых начинаются с «Об»</a>
+                    <a class="dropdown-item" href="/excursionInEurope">Экскурсии проведенные в регионе "Европа"</a>
+                    <a class="dropdown-item" href="/infoAboutNameOfExcursion">Экскурсии, название которых “О
+                        дендропарке”</a>
+                    <a class="dropdown-item" href="/infoDateLanding">Информация о растении, которое было посажено с 2009
+                        до текущего года”</a>
+                    <a class="dropdown-item" href="/infAboutSubstance">Растения, которые обрабатываются химическим
+                        веществом “Хорус”</a>
+                    <a class="dropdown-item" href="/personWhoSpentExcurs">Экскурсии, которые провел определенный
+                        преподаватель</a>
+                    <a class="dropdown-item" href="/infAboutReg">Название региона не начинается на “Е” и не
+                        заканчивается на ‘а’</a>
+                    <a class="dropdown-item" href="/infoAboutStudents">Вывод всех учащихся колледжа</a>
+                    <a class="dropdown-item" href="/infoAboutReplace">Список замененных растений, которые начинаются на
+                        ‘Л’, а также их причина замены</a>
+                    <a class="dropdown-item" href="/locationofplant">Полная информация о растениях, которые находятся в
+                        регионе “Сибирь и Дальний Восток</a>
+                    <a class="dropdown-item" href="/classOfPlants">Растения, которые относятся к отделу Голосеменные</a>
+                    <a class="dropdown-item" href="/fioOfteacher">Работники колледжа, ФИО которыъ начинается на “Ч”</a>
+                    <a class="dropdown-item" href="/positionOnDiagram">Экскурсии, регион которых на схеме находится на
+                        Западе</a>
+                    <a class="dropdown-item" href="/fullInfoAboutSubstances">Полная информация о химических веществах,
+                        которые заканчиваются на “а”</a>
+                </div>
+            </li>
 
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Хранимые процедуры
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/countOfPlants">Поиск растений по жизненной форме</a>
+                    <a class="dropdown-item" href="/countOfTeachers">Поиск сотрудников по должности</a>
+                    <a class="dropdown-item" href="/listOfStudExcursion">Вывод студентов, которые посетили определенную
+                        экскурсию</a>
+                    <a class="dropdown-item" href="/decomissPlants">Количество списанных растений за день</a>
+                    <a class="dropdown-item" href="/positionOnDiagProc">Экскурсии, регион которых в определенном
+                        местоположении</a>
+                    <a class="dropdown-item" href="/countOfOfficials">Количество определенных должностей в
+                        дендропарке</a>
+                    <a class="dropdown-item" href="/nameOfExProc">Поиск экскурсий по названию</a>
+                    <a class="dropdown-item" href="/infSubstanceProc">Растения, обрабатываемые определенным хим
+                        веществом</a>
+                    <a class="dropdown-item" href="/infholdExProc">Экскурсии проведенные преподавателем</a>
+                    <a class="dropdown-item" href="/goalOfUsingProc">Количество пользователей, у которых определенная
+                        цель использования материалов дендропарка</a>
+                </div>
+            </li>
+        </ul>
     </div>
-    <script>
-        function up() {
-            let top = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
-            if (top > 0) {
-                window.scrollBy(0, ((top + 100) / -10));
-                t = setTimeout('up()', 20);
-            } else clearTimeout(t);
-            return false;
-        }
-    </script>
+</nav>
+
+
+<div class="container-fluid">
+
+<!--    <div class="col-sm-1">-->
+<!--        <ul class="nav nav-sidebar">-->
+<!--            &lt;!&ndash;                <li class="table-item"><a href="/">Главная</a></li>&ndash;&gt;-->
+<!--            <li class="table-item"><a href="/UsersOfDendropark">Пользователи дендропарка</a></li>-->
+<!--            <li class="table-item"><a href="/Officials">Должностные лица</a></li>-->
+<!--            <li class="table-item"><a href="/plants">Растения</a></li>-->
+<!--            <li class="table-item"><a href="/chemicalSubstance">Химические вещества</a></li>-->
+<!--            <li class="table-item"><a href="/studyExcursions">Учебные экскурсии</a></li>-->
+<!--            <li class="table-item"><a href="/excursionReports">Отчеты о проведенных экскурсиях</a></li>-->
+<!--            <li class="table-item"><a href="/plantReplacement">Заменённые растения</a></li>-->
+<!--            <li class="table-item"><a href="/writeOffCertificates">Акты на списание</a></li>-->
+<!--        </ul>-->
+<!--    </div>-->
+
+    <div class="col-md-11 main">{{{body}}}</div>
+
+</div>
+<script>
+    function up() {
+        let top = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+        if (top > 0) {
+            window.scrollBy(0, ((top + 100) / -10));
+            t = setTimeout('up()', 20);
+        } else clearTimeout(t);
+        return false;
+    }
+</script>
 
 <script src="authorization.js"></script>
 </body>

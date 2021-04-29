@@ -421,7 +421,7 @@ app.put("/api/editOfficial", jsonParser, function (req, res) {
 
 
 
-
+//<=======================Хранимые процедуры======================================>
 app.post("/api/countOfPlants", jsonParser, function (req, res) {
     const params = [
         ['life', TYPES.NVarChar]
@@ -488,10 +488,75 @@ function postPutApi(req, res, procedure, params, asArr) {
     })
 }
 
+app.get("/nameOfExProc", function (request, response) {
+    response.render("nameOfExProc", {
+        title: `Поиск экскурсий по названию`
+    })
+})
+
+app.post("/api/nameOfExProc", jsonParser, function (req, res) {
+    const params = [
+        ['nameOfEx', TYPES.NVarChar]
+    ]
+    postPutApi(req, res, 'nameOfExProc', params, true)
+});
+
+app.get("/infSubstanceProc", function (request, response) {
+    response.render("infSubstanceProc", {
+        title: `Растения, обрабатываемые определенным хим веществом`
+    })
+})
+
+app.post("/api/infSubstanceProc", jsonParser, function (req, res) {
+    const params = [
+        ['nameOfSubstance', TYPES.NVarChar]
+    ]
+    postPutApi(req, res, 'infSubstanceProc', params, true)
+});
+
+app.get("/infholdExProc", function (request, response) {
+    response.render("infholdExProc", {
+        title: `Экскурсии проведенные преподавателем`
+    })
+})
+
+app.post("/api/infholdExProc", jsonParser, function (req, res) {
+    const params = [
+        ['fio', TYPES.NVarChar]
+    ]
+    postPutApi(req, res, 'infholdExProc', params, true)
+});
 
 
+app.get("/positionOnDiagProc", function (request, response) {
+    response.render("positionOnDiagProc", {
+        title: `Экскурсии`
+    })
+})
+
+app.post("/api/positionOnDiagProc", jsonParser, function (req, res) {
+    const params = [
+        ['location', TYPES.NVarChar]
+    ]
+    postPutApi(req, res, 'positionOnDiagProc', params, true)
+});
+
+app.get("/goalOfUsingProc", function (request, response) {
+    response.render("goalOfUsingProc", {
+        title: `Количетсво пользователей`
+    })
+})
+
+app.post("/api/goalOfUsingProc", jsonParser, function (req, res) {
+    const params = [
+        ['goalOfUsing', TYPES.NVarChar]
+    ]
+    postPutApi(req, res, 'goalOfUsingProc', params, true)
+});
+
+// <======================Авторизация=======================>
 app.post("/api/authorization", jsonParser, function (req, res) {
-    console.log('asdasdaasdasd')
+    //console.log('asdasdaasdasd')
     console.log(req.body)
     let config = {
         server: 'localhost',
