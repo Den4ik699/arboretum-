@@ -150,8 +150,12 @@ app.get('/api/Officials', function (req, res) {
     connection.execSql(request);
 })
 
+
+
+
+//<=========================PLANTS==============================>
 app.get('/api/plants', function (req, res) {
-    request = new Request("SELECT * FROM [Plants]", function (err, count, rows) {
+   let request = new Request("SELECT * FROM [Plants]", function (err, count, rows) {
         if (err) return console.log(err);
         let result = rows.map(elem => {
             return elem.reduce((total, elem) => {
@@ -167,6 +171,121 @@ app.get('/api/plants', function (req, res) {
     connection.execSql(request);
 })
 
+app.post("/api/createPlant", jsonParser, function (req, res) {
+
+    let uniqNum, namePlant, systLocation, life, bioDescr, ecoDescr, dateOfLand, infWrOff, location, using,numOfreg;
+    uniqNum = req.body['Уникальный номер'];
+    namePlant = req.body['Название растения'];
+    systLocation = req.body['Систематическое положение'];
+    life = req.body['Жизненная форма'];
+    bioDescr = req.body['Биологическое описание'];
+    ecoDescr = req.body['Экологическое описание'];
+    dateOfLand = req.body['Дата посадки'];
+    infWrOff = req.body['Информация о списании'];
+    location = req.body['Местоположение в дендропарке'];
+    using = req.body['Применение'];
+    numOfreg = req.body['Номер региона'];
+
+    //console.log(uniqNum, namePlant, systLocation, life, bioDescr,ecoDescr,dateOfLand,infWrOff,location,using,numOfreg);
+    let request = new Request("addPlants", function (err, count, rows) {
+        if (err) {
+            return console.error(err);
+        }
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        console.log(result);
+        res.send(JSON.stringify(result))
+    });
+
+    request.addParameter('uniqNum', TYPES.Int, uniqNum);
+    request.addParameter('namePlant', TYPES.NVarChar, namePlant);
+    request.addParameter('systLocation', TYPES.NVarChar, systLocation);
+    request.addParameter('life', TYPES.NVarChar, life);
+    request.addParameter('bioDescr', TYPES.NVarChar, bioDescr);
+    request.addParameter('ecoDescr', TYPES.NVarChar, ecoDescr);
+    request.addParameter('dateOfLand', TYPES.Date, dateOfLand);
+    request.addParameter('infWrOff', TYPES.NVarChar, infWrOff);
+    request.addParameter('location', TYPES.NVarChar, location);
+    request.addParameter('using', TYPES.NVarChar, using);
+    request.addParameter('numOfreg', TYPES.Int, numOfreg);
+
+    connection.callProcedure(request);
+});
+
+app.put("/api/editPlants", jsonParser, function (req, res) {
+    let uniqNum, namePlant, systLocation, life, bioDescr, ecoDescr, dateOfLand, infWrOff, location, using,numOfreg;
+
+    uniqNum = req.body['Уникальный номер'];
+    namePlant = req.body['Название растения'];
+    systLocation = req.body['Систематическое положение'];
+    life = req.body['Жизненная форма'];
+    bioDescr = req.body['Биологическое описание'];
+    ecoDescr = req.body['Экологическое описание'];
+    dateOfLand = req.body['Дата посадки'];
+    infWrOff = req.body['Информация о списании'];
+    location = req.body['Местоположение в дендропарке'];
+    using = req.body['Применение'];
+    numOfreg = req.body['Номер региона'];
+
+    console.log(uniqNum, namePlant, systLocation, life, bioDescr,ecoDescr,dateOfLand,infWrOff,location,using,numOfreg);
+    let request = new Request("updatePlants", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        res.send(JSON.stringify(result))
+    });
+    request.addParameter('uniqNum', TYPES.Int, uniqNum);
+    request.addParameter('namePlant', TYPES.NVarChar, namePlant);
+    request.addParameter('systLocation', TYPES.NVarChar, systLocation);
+    request.addParameter('life', TYPES.NVarChar, life);
+    request.addParameter('bioDescr', TYPES.NVarChar, bioDescr);
+    request.addParameter('ecoDescr', TYPES.NVarChar, ecoDescr);
+    request.addParameter('dateOfLand', TYPES.Date, dateOfLand);
+    request.addParameter('infWrOff', TYPES.NVarChar, infWrOff);
+    request.addParameter('location', TYPES.NVarChar, location);
+    request.addParameter('using', TYPES.NVarChar, using);
+    request.addParameter('numOfreg', TYPES.Int, numOfreg);
+    connection.callProcedure(request);
+});
+
+app.get("/api/getPlant/:uniqNum", function (req, res) {
+    const uniqNum = req.params.uniqNum;
+    let request = new Request("SELECT * FROM [Plants] WHERE Plants.[Уникальный номер] = @uniqNum", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        res.send(JSON.stringify(result))
+    });
+    request.addParameter('uniqNum', TYPES.Int, uniqNum);
+    connection.execSql(request);
+});
+
+app.delete("/api/getPlant/:uniqNum", function (req, res) {
+    const uniqNum = req.params.uniqNum;
+    console.log(uniqNum);
+   let request = new Request("DELETE [Plants] WHERE [Plants].[Уникальный номер] = @uniqNum", function (err, count, rows) {
+        if (err) return console.log(err);
+        res.send(JSON.stringify(uniqNum))
+    });
+    request.addParameter('uniqNum', TYPES.Int, uniqNum);
+    connection.execSql(request);
+});
+
+
+
+//<================CHEMICAL SUBSTANCE========================>
 app.get('/api/chemicalSubstance', function (req, res) {
     request = new Request("SELECT * FROM [Chemical substances]", function (err, count, rows) {
         if (err) return console.log(err);
@@ -184,8 +303,92 @@ app.get('/api/chemicalSubstance', function (req, res) {
     connection.execSql(request);
 })
 
+app.post("/api/createSubstance", jsonParser, function (req, res) {
+
+    let num, nameSubst, recommend, inf;
+    num = req.body['Номенклатурный номер'];
+    nameSubst = req.body['Название вещества'];
+    recommend = req.body['Рекомендации по применению'];
+    inf = req.body['Информация об использовании'];
+
+    console.log(num, nameSubst, recommend, inf);
+    let request = new Request("AddNewSubstance", function (err, count, rows) {
+        if (err) {
+            return console.error(err);
+        }
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        console.log(result);
+        res.send(JSON.stringify(result))
+    });
+
+    request.addParameter('numenNum', TYPES.Int, num);
+    request.addParameter('nameSubst', TYPES.NVarChar, nameSubst);
+    request.addParameter('recommend', TYPES.NVarChar, recommend);
+    request.addParameter('infabusing', TYPES.NVarChar, inf);
+
+    connection.callProcedure(request);
+});
+
+app.get("/api/getSubstance/:num", function (req, res) {
+    const num = req.params.num;
+    let request = new Request("SELECT * FROM [Chemical substances] WHERE [Chemical substances].[Номенклатурный номер] = @num", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        res.send(JSON.stringify(result))
+    });
+    request.addParameter('num', TYPES.Int, num);
+    connection.execSql(request);
+});
+
+app.put("/api/editSubstance", jsonParser, function (req, res) {
+    let num, nameSubst, recommend, inf;
+    num = req.body['Номенклатурный номер'];
+    nameSubst = req.body['Название вещества'];
+    recommend = req.body['Рекомендации по применению'];
+    inf = req.body['Информация об использовании'];
+    console.log(num, nameSubst, recommend, inf);
+
+    let  request = new Request("updateSubstance", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        res.send(JSON.stringify(result))
+    });
+    request.addParameter('numenNum', TYPES.Int, num);
+    request.addParameter('nameSubst', TYPES.NVarChar, nameSubst);
+    request.addParameter('recommend', TYPES.NVarChar, recommend);
+    request.addParameter('infabusing', TYPES.NVarChar, inf);
+    connection.callProcedure(request);
+});
+
+app.delete("/api/getSubstance/:num", function (req, res) {
+    const num = req.params.num;
+    console.log(num);
+    let request = new Request("DELETE [Chemical substances] WHERE [Chemical substances].[Номенклатурный номер] = @num", function (err, count, rows) {
+        if (err) return console.log(err);
+        res.send(JSON.stringify(num))
+    });
+    request.addParameter('num', TYPES.Int, num);
+    connection.execSql(request);
+});
+
+
 app.get('/api/studyExcursions', function (req, res) {
-    request = new Request("SELECT * FROM [Study excursions]", function (err, count, rows) {
+    let request = new Request("SELECT * FROM [Study excursions]", function (err, count, rows) {
         if (err) return console.log(err);
         let result = rows.map(elem => {
             return elem.reduce((total, elem) => {
@@ -219,7 +422,7 @@ app.get('/api/excursionReports', function (req, res) {
 })
 
 app.get('/api/plantReplacement', function (req, res) {
-    request = new Request("SELECT * FROM [Plant replacement]", function (err, count, rows) {
+    let request = new Request("SELECT * FROM [Plant replacement]", function (err, count, rows) {
         if (err) return console.log(err);
         let result = rows.map(elem => {
             return elem.reduce((total, elem) => {
@@ -237,7 +440,7 @@ app.get('/api/plantReplacement', function (req, res) {
 
 
 app.get('/api/writeOffCertificates', function (req, res) {
-    request = new Request("SELECT * FROM [Write-off certificates]", function (err, count, rows) {
+   let request = new Request("SELECT * FROM [Write-off certificates]", function (err, count, rows) {
         if (err) return console.log(err);
         let result = rows.map(elem => {
             return elem.reduce((total, elem) => {
@@ -317,7 +520,7 @@ app.post("/api/createUser", jsonParser, function (req, res) {
     rank = req.body['Должность'];
     goalOfUsing = req.body['Цель использования материалов дендропарка'];
     /* console.log(numBook, tabNum, fio, rank, goalOfUsing); */
-    request = new Request("addUsers", function (err, count, rows) {
+    let request = new Request("addUsers", function (err, count, rows) {
         if (err) {
             return console.error(err);
         }

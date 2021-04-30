@@ -100,7 +100,7 @@ a:hover {
 /* ======================== */
 .decor {
    display: none;
-   position: fixed;
+   position: relative;
    left: 36%;
    max-width: 400px;
    margin: 50px auto 0;

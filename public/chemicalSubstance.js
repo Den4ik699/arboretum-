@@ -20,6 +20,101 @@ async function GetChemicalSubstance() {
     }
 }
 
+async function createSubstance() {
+    const modal = document.querySelector('.decor');
+    const inpNum = document.querySelector('#inpNum'),
+        inpNameSubst = document.querySelector('#inpNameSubst'),
+        inpRecommend = document.querySelector('#inpRecommend'),
+        inpInfo = document.querySelector('#inpInfo'),
+
+        inpBtnAdd = document.querySelector('#inpBtnAdd'),
+        close = document.querySelector('.close');
+
+    function showModal() {
+        modal.style.display = 'block';
+    }
+
+    function hideModal() {
+        modal.style.display = 'none';
+    }
+
+    showModal();
+
+    close.addEventListener('click', () => {
+        hideModal();
+    })
+
+    inpBtnAdd.addEventListener('click', async (e) => {
+        e.preventDefault();
+        hideModal();
+        const response = await fetch("/api/createSubstance", {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                ['Номенклатурный номер']: inpNum.value,
+                ['Название вещества']: inpNameSubst.value,
+                ['Рекомендации по применению']: inpRecommend.value,
+                ['Информация об использовании']: inpInfo.value
+            })
+        });
+        if (response.ok === true) {
+            const user = await response.json();
+            document.querySelector("#tbody1").append(row(user));
+        }
+    })
+}
+
+async function editSubstance(id) {
+    const response = await fetch("/api/getSubstance/" + id, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+    let num, nameSubst, recommend, inf;
+    if (response.ok === true) {
+        const getSubstance = await response.json();
+        num = getSubstance['Номенклатурный номер'];
+        nameSubst = getSubstance['Название вещества'];
+        recommend = getSubstance['Рекомендации по применению'];
+        inf = getSubstance['Информация об использовании'];
+    }
+
+    const editResponse = await fetch("/api/editSubstance/", {
+        method: "PUT",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            ['Номенклатурный номер']: num,
+            ['Название вещества']: prompt('Введите название вещества', `${nameSubst}`),
+            ['Рекомендации по применению']: prompt('Введите Рекомендации по применению', `${recommend}`),
+            ['Информация об использовании']: prompt('Введите Информацию об использовании', `${inf}`)
+        })
+    });
+    if (editResponse.ok === true) {
+        const substance = await editResponse.json();
+        document.querySelector("tr[data-rowid='" + substance['Номенклатурный номер'] + "']").replaceWith(row(substance));
+    }
+}
+
+async function deleteSubstance(id) {
+    const response = await fetch("/api/getSubstance/" + id, {
+        method: "DELETE",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+    if (response.ok === true) {
+        const id = await response.json();
+        document.querySelector("tr[data-rowid='" + id + "']").remove();
+    }
+}
+
 function head(key){
     const th = document.createElement("th");
     th.append(key)
@@ -42,23 +137,6 @@ function row(request) {
     }
 
 
-   /*  const num = document.createElement("td");
-    num.append(request['Номенклатурный номер']);
-    tr.append(num);
-
-    const nameOfSubst = document.createElement("td");
-    nameOfSubst.append(request['Название вещества']);
-    tr.append(nameOfSubst);
-
-    const recommend = document.createElement("td");
-    recommend.append(request['Рекомендации по применению']);
-    tr.append(recommend);
-
-    const infAboutUsing = document.createElement("td");
-    infAboutUsing.append(request['Информация об использовании']);
-    tr.append(infAboutUsing);
- */
-
     const linksTd = document.createElement("td");
 
     const editLink = document.createElement("a");
@@ -68,18 +146,21 @@ function row(request) {
     editLink.addEventListener("click", e => {
 
         e.preventDefault();
-        //EditUser(user['Табельный номер']);
+        editSubstance(request['Номенклатурный номер']);
     });
     linksTd.append(editLink);
 
     const removeLink = document.createElement("a");
-    removeLink.setAttribute("data-id", request['Табельный номер']);
+    removeLink.setAttribute("data-id", request['Номенклатурный номер']);
     removeLink.setAttribute("style", "cursor:pointer;padding:15px; color: gold");
     removeLink.append("Удалить");
     removeLink.addEventListener("click", e => {
 
         e.preventDefault();
-        //DeleteUser(user.id);
+        let confDelItem = confirm("Вы уверены, что хотите удалить запись?");
+        if (confDelItem) {
+            deleteSubstance(request['Номенклатурный номер']);
+        }
     });
 
     linksTd.append(removeLink);
