@@ -20,6 +20,103 @@ async function GetStudyExcursions() {
     }
 }
 
+async function createExcursion() {
+    const modal = document.querySelector('.decor');
+    const inpNameEx = document.querySelector('#inpNameEx'),
+        inpDescr = document.querySelector('#inpDescr'),
+        inpTabNum = document.querySelector('#inpTabNum'),
+        inpDuration = document.querySelector('#inpDuration'),
+
+        inpBtnAdd = document.querySelector('#inpBtnAdd'),
+        close = document.querySelector('.close');
+
+    function showModal() {
+        modal.style.display = 'block';
+    }
+
+    function hideModal() {
+        modal.style.display = 'none';
+    }
+
+    showModal();
+
+    close.addEventListener('click', () => {
+        hideModal();
+    })
+
+    inpBtnAdd.addEventListener('click', async (e) => {
+        e.preventDefault();
+        hideModal();
+        const response = await fetch("/api/createExcursion", {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                ['Наименование экскурсии']: inpNameEx.value,
+                ['Краткое содержание экскурсии']: inpDescr.value,
+                ['Табельный номер']: inpTabNum.value,
+                ['Продолжительность экскурсии']: inpDuration.value
+            })
+        });
+        if (response.ok === true) {
+            const user = await response.json();
+            document.querySelector("#tbody1").append(row(user));
+        }
+    })
+}
+
+async function editExcursion(id) {
+    const response = await fetch("/api/getExcursion/" + id, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+    let Findid, nameEx, descript, tabNum, duration;
+    if (response.ok === true) {
+        const getExcursion = await response.json();
+        Findid = getExcursion['Порядковый номер экскурсии'];
+        nameEx = getExcursion['Наименование экскурсии'];
+        descript = getExcursion['Краткое содержание экскурсии'];
+        tabNum = getExcursion['Табельный номер'];
+        duration = getExcursion['Продолжительность экскурсии'];
+    }
+
+    const editResponse = await fetch("/api/editExcursion/", {
+        method: "PUT",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            ['Порядковый номер экскурсии']: Findid,
+            ['Наименование экскурсии']: prompt('Введите Наименование экскурсии', `${nameEx}`),
+            ['Краткое содержание экскурсии']: prompt('Введите Краткое содержание экскурсии', `${descript}`),
+            ['Табельный номер']: prompt('Введите Табельный номер', `${tabNum}`),
+            ['Продолжительность экскурсии']: prompt('Введите Продолжительность экскурсии', `${duration}`)
+        })
+    });
+    if (editResponse.ok === true) {
+        const request = await editResponse.json();
+        document.querySelector("tr[data-rowid='" + request['Порядковый номер экскурсии'] + "']").replaceWith(row(request));
+    }
+}
+
+async function deleteExcursion(id) {
+    const response = await fetch("/api/getExcursion/" + id, {
+        method: "DELETE",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+    if (response.ok === true) {
+        const id = await response.json();
+        document.querySelector("tr[data-rowid='" + id + "']").remove();
+    }
+}
+
 function head(key){
     const th = document.createElement("th");
     th.append(key)
@@ -43,28 +140,6 @@ function row(request) {
     }
 
 
-
-    /* const num = document.createElement("td");
-    num.append(request['Порядковый номер экскурсии']);
-    tr.append(num);
-
-    const nameOfExc = document.createElement("td");
-    nameOfExc.append(request['Наименование экскурсии']);
-    tr.append(nameOfExc);
-
-    const descrOfexc = document.createElement("td");
-    descrOfexc.append(request['Краткое содержание экскурсии']);
-    tr.append(descrOfexc);
-
-    const tabNum = document.createElement("td");
-    tabNum.append(request['Табельный номер']);
-    tr.append(tabNum);
-
-    const duration = document.createElement("td");
-    duration.append(request['Продолжительность экскурсии']);
-    tr.append(duration); */
-
-
     const linksTd = document.createElement("td");
 
     const editLink = document.createElement("a");
@@ -74,7 +149,7 @@ function row(request) {
     editLink.addEventListener("click", e => {
 
         e.preventDefault();
-        //EditUser(user['Табельный номер']);
+        editExcursion(request['Порядковый номер экскурсии']);
     });
     linksTd.append(editLink);
 
@@ -85,7 +160,10 @@ function row(request) {
     removeLink.addEventListener("click", e => {
 
         e.preventDefault();
-        //DeleteUser(user.id);
+        let confDelItem = confirm("Вы уверены, что хотите удалить запись?");
+        if (confDelItem) {
+            deleteExcursion(request['Порядковый номер экскурсии']);
+        }
     });
 
     linksTd.append(removeLink);

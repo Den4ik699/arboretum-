@@ -63,7 +63,7 @@ app.get("/studyExcursions", function (request, response) {
 
 app.get("/excursionReports", function (request, response) {
     response.render("excursionReports", {
-        title: `Учебные экскурсии`
+        title: `Отчеты о проведенных экскурсиях`
     })
 })
 
@@ -115,6 +115,36 @@ app.get("/countOfOfficials", function (request, response) {
     })
 })
 
+app.get("/deletedUsers", function (request, response) {
+    response.render("deletedUsers", {
+        title: `Удаленные пользователи`
+    })
+})
+
+app.get("/deletedOfficials", function (request, response) {
+    response.render("deletedOfficials", {
+        title: `Удаленные должностные лица`
+    })
+})
+
+app.get("/insertedOfficials", function (request, response) {
+    response.render("insertedOfficials", {
+        title: `Добавленные должностные лица`
+    })
+})
+
+app.get("/insertedUsers", function (request, response) {
+    response.render("insertedUsers", {
+        title: `Добавленные пользователи`
+    })
+})
+
+app.get("/updatedUsers", function (request, response) {
+    response.render("updatedUsers", {
+        title: `Обновленные пользователи`
+    })
+})
+
 app.get('/api/usersOfDendropark', function (req, res) {
     request = new Request("SELECT * FROM [Users of dendropark]", function (err, count, rows) {
         console.log(rows);
@@ -150,8 +180,95 @@ app.get('/api/Officials', function (req, res) {
     connection.execSql(request);
 })
 
+app.get('/api/deletedUsers', function (req, res) {
+    let request = new Request("SELECT * FROM [DeletedUser]", function (err, count, rows) {
+        console.log(rows);
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })
+        res.send(JSON.stringify(result))
+    });
+    request.on('requestCompleted', function () {
+        console.log('запрос к таблице deletedUsers завершён')
+    });
+    connection.execSql(request);
+})
 
+app.get('/api/deletedOfficials', function (req, res) {
+    let request = new Request("SELECT * FROM [DeletedOfficials]", function (err, count, rows) {
+        console.log(rows);
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })
+        res.send(JSON.stringify(result))
+    });
+    request.on('requestCompleted', function () {
+        console.log('запрос к таблице [DeletedOfficials] завершён')
+    });
+    connection.execSql(request);
+})
 
+app.get('/api/insertedOfficials', function (req, res) {
+    let request = new Request("SELECT * FROM [InsertedOfficials]", function (err, count, rows) {
+        console.log(rows);
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })
+        res.send(JSON.stringify(result))
+    });
+    request.on('requestCompleted', function () {
+        console.log('запрос к таблице [InsertedOfficials] завершён')
+    });
+    connection.execSql(request);
+})
+
+app.get('/api/insertedUsers', function (req, res) {
+    let request = new Request("SELECT * FROM [InsertedUsers]", function (err, count, rows) {
+        console.log(rows);
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })
+        res.send(JSON.stringify(result))
+    });
+    request.on('requestCompleted', function () {
+        console.log('запрос к таблице [InsertedUsers] завершён')
+    });
+    connection.execSql(request);
+})
+
+app.get('/api/updatedUsers', function (req, res) {
+    let request = new Request("SELECT * FROM [UpdatedUsers]", function (err, count, rows) {
+        console.log(rows);
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })
+        res.send(JSON.stringify(result))
+    });
+    request.on('requestCompleted', function () {
+        console.log('запрос к таблице [UpdatedUsers] завершён')
+    });
+    connection.execSql(request);
+})
 
 //<=========================PLANTS==============================>
 app.get('/api/plants', function (req, res) {
@@ -387,6 +504,8 @@ app.delete("/api/getSubstance/:num", function (req, res) {
 });
 
 
+
+//<=====================STUDY EXCURSION=======================>
 app.get('/api/studyExcursions', function (req, res) {
     let request = new Request("SELECT * FROM [Study excursions]", function (err, count, rows) {
         if (err) return console.log(err);
@@ -403,6 +522,94 @@ app.get('/api/studyExcursions', function (req, res) {
     });
     connection.execSql(request);
 })
+
+app.post("/api/createExcursion", jsonParser, function (req, res) {
+
+    let nameEx, descript, tabNum, duration;
+    nameEx = req.body['Наименование экскурсии'];
+    descript = req.body['Краткое содержание экскурсии'];
+    tabNum = req.body['Табельный номер'];
+    duration = req.body['Продолжительность экскурсии'];
+
+    console.log(nameEx, descript, tabNum, duration);
+    let request = new Request("AddNewExcursion", function (err, count, rows) {
+        if (err) {
+            return console.error(err);
+        }
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        console.log(result);
+        res.send(JSON.stringify(result))
+    });
+
+    request.addParameter('nameEx', TYPES.NVarChar, nameEx);
+    request.addParameter('descript', TYPES.NVarChar, descript);
+    request.addParameter('tabNum', TYPES.Int, tabNum);
+    request.addParameter('duration', TYPES.NVarChar, duration);
+
+    connection.callProcedure(request);
+});
+
+app.get("/api/getExcursion/:id", function (req, res) {
+    const id = req.params.id;
+    let request = new Request("SELECT * FROM [Study excursions] where [Study excursions].[Порядковый номер экскурсии] = @id", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        res.send(JSON.stringify(result))
+    });
+    request.addParameter('id', TYPES.Int, id);
+    connection.execSql(request);
+});
+
+app.put("/api/editExcursion", jsonParser, function (req, res) {
+    let idFind, nameEx, descript, tabNum, duration;
+    idFind = req.body['Порядковый номер экскурсии']
+    nameEx = req.body['Наименование экскурсии'];
+    descript = req.body['Краткое содержание экскурсии'];
+    tabNum = req.body['Табельный номер'];
+    duration = req.body['Продолжительность экскурсии'];
+
+    console.log(nameEx, descript, tabNum, duration);
+
+
+    let  request = new Request("UpdateExcursion", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        res.send(JSON.stringify(result))
+    });
+    request.addParameter('id', TYPES.NVarChar, idFind);
+    request.addParameter('nameEx', TYPES.NVarChar, nameEx);
+    request.addParameter('descript', TYPES.NVarChar, descript);
+    request.addParameter('tabNum', TYPES.Int, tabNum);
+    request.addParameter('duration', TYPES.NVarChar, duration);
+    connection.callProcedure(request);
+});
+
+app.delete("/api/getExcursion/:id", function (req, res) {
+    const id = req.params.id;
+    console.log(id);
+    let request = new Request("DELETE [Study excursions] WHERE [Study excursions].[Порядковый номер экскурсии] = @id", function (err, count, rows) {
+        if (err) return console.log(err);
+        res.send(JSON.stringify(id))
+    });
+    request.addParameter('id', TYPES.Int, id);
+    connection.execSql(request);
+});
+
 
 app.get('/api/excursionReports', function (req, res) {
     request = new Request("SELECT * FROM [Excursion reports]", function (err, count, rows) {
