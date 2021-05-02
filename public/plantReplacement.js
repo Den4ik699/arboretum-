@@ -20,6 +20,111 @@ async function GetPlantReplacement() {
     }
 }
 
+async function createPlantReplacement() {
+    const modal = document.querySelector('.decor');
+    const inpNum = document.querySelector('#inpNum'),
+        inpUniqNumPlant = document.querySelector('#inpUniqNumPlant'),
+        inpPlantReplace = document.querySelector('#inpPlantReplace'),
+        inpCauseRepl = document.querySelector('#inpCauseRepl'),
+        inpDateReplace = document.querySelector('#inpDateReplace'),
+        inpTabNum = document.querySelector('#inpTabNum'),
+
+        inpBtnAdd = document.querySelector('#inpBtnAdd'),
+        close = document.querySelector('.close');
+
+    function showModal() {
+        modal.style.display = 'block';
+    }
+
+    function hideModal() {
+        modal.style.display = 'none';
+    }
+
+    showModal();
+
+    close.addEventListener('click', () => {
+        hideModal();
+    })
+
+    inpBtnAdd.addEventListener('click', async (e) => {
+        e.preventDefault();
+        hideModal();
+        const response = await fetch("/api/createPlantReplacement", {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                ['Порядковый номер учетной карточки']: inpNum.value,
+                ['Уникальный номер']: inpUniqNumPlant.value,
+                ['Название заменяемого растения']: inpPlantReplace.value,
+                ['Причина замены']: inpCauseRepl.value,
+                ['Дата замены']: inpDateReplace.value,
+                ['Табельный номер']: inpTabNum.value
+            })
+        });
+        if (response.ok === true) {
+            const user = await response.json();
+            document.querySelector("#tbody1").append(row(user));
+        }
+    })
+}
+
+async function editPlantReplacement(id) {
+    const response = await fetch("/api/getPlantReplacement/" + id, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+    let numEx, uniqNum, namePlant, causeOfRepl, dateReplace, tabnum;
+    if (response.ok === true) {
+        const getPlantReplacement = await response.json();
+        numEx = getPlantReplacement['Порядковый номер учетной карточки'];
+        uniqNum = getPlantReplacement['Уникальный номер'];
+        namePlant = getPlantReplacement['Название заменяемого растения'];
+        causeOfRepl = getPlantReplacement['Причина замены'];
+        dateReplace = getPlantReplacement['Дата замены'];
+        tabnum = getPlantReplacement['Табельный номер'];
+
+    }
+
+    const editResponse = await fetch("/api/editPlantReplacement/", {
+        method: "PUT",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            ['Порядковый номер учетной карточки']: numEx,
+            ['Уникальный номер']: uniqNum,
+            ['Название заменяемого растения']: prompt('Введите Название заменяемого растения', `${namePlant}`),
+            ['Причина замены']: prompt('Введите Причину замены', `${causeOfRepl}`),
+            ['Дата замены']: prompt('Введите Дату замены', `${dateReplace}`),
+            ['Табельный номер']: prompt('Введите Табельный номер', `${tabnum}`)
+        })
+    });
+    if (editResponse.ok === true) {
+        const replace = await editResponse.json();
+        document.querySelector("tr[data-rowid='" + replace['Уникальный номер'] + "']").replaceWith(row(replace));
+    }
+}
+
+async function deletePlantReplacement(id) {
+    const response = await fetch("/api/getPlantReplacement/" + id, {
+        method: "DELETE",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+    if (response.ok === true) {
+        const id = await response.json();
+        document.querySelector("tr[data-rowid='" + id + "']").remove();
+    }
+}
+
+
 function head(key){
     const th = document.createElement("th");
     th.append(key)
@@ -42,30 +147,6 @@ function row(request) {
         tr.append(idTd);
     }
 
-/*     const num = document.createElement("td");
-    num.append(request['Порядковый номер учетной карточки']);
-    tr.append(num);
-
-    const uniqNum = document.createElement("td");
-    uniqNum.append(request['Уникальный номер']);
-    tr.append(uniqNum);
-
-    const name = document.createElement("td");
-    name.append(request['Название заменяемого растения']);
-    tr.append(name);
-
-    const causeOfReplace = document.createElement("td");
-    causeOfReplace.append(request['Причина замены']);
-    tr.append(causeOfReplace);
-
-    const dateOfrelace = document.createElement("td");
-    dateOfrelace.append(request['Дата замены']);
-    tr.append(dateOfrelace);
-
-    const tabNum = document.createElement("td");
-    tabNum.append(request['Табельный номер']);
-    tr.append(tabNum); */
-
 
     const linksTd = document.createElement("td");
 
@@ -76,7 +157,7 @@ function row(request) {
     editLink.addEventListener("click", e => {
 
         e.preventDefault();
-        //EditUser(user['Табельный номер']);
+        editPlantReplacement(request['Уникальный номер']);
     });
     linksTd.append(editLink);
 
@@ -87,7 +168,10 @@ function row(request) {
     removeLink.addEventListener("click", e => {
 
         e.preventDefault();
-        //DeleteUser(user.id);
+        let confDelItem = confirm("Вы уверены, что хотите удалить запись?");
+        if (confDelItem) {
+            deletePlantReplacement(request['Уникальный номер']);
+        }
     });
 
     linksTd.append(removeLink);

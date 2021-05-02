@@ -63,6 +63,7 @@ async function EditUser(id) {
 
 
 async function CreateUser() {
+    let triggerMessage = 'Данные добавлены в таблицу "Добавленные пользователи"';
     const modal = document.querySelector('.decor');
     const inpNumBook = document.querySelector('#inpNumBook'),
         inpTabNum = document.querySelector('#inpTabNum'),
@@ -106,12 +107,33 @@ async function CreateUser() {
         });
         if (response.ok === true) {
             const user = await response.json();
-            document.querySelector("#tbody1").append(row(user));
+            console.log(user);
+            if (user.err) {
+                switch (user.err.number) {
+                    case 229:
+                        alert('У вас недостаточно прав')
+                        break;
+
+                    case 547:
+                        alert('Ошибка целостности')
+                        break;
+                    default:
+                        alert(user.err.message)
+                        break;
+                }
+            }
+            else if (user.infoMessage) {
+                if(user.infoMessage.message === triggerMessage) {
+                    document.querySelector("#tbody1").append(row(user.result));
+                }
+                alert(user.infoMessage.message);
+            }
         }
     })
 }
 
 async function DeleteUser(id) {
+    let triggerMessage = 'Данные добавлены в таблицу "Удаленные пользователи"'
     const response = await fetch("/api/users/" + id, {
         method: "DELETE",
         headers: {
@@ -120,10 +142,29 @@ async function DeleteUser(id) {
     });
     if (response.ok === true) {
         const id = await response.json();
-        document.querySelector("tr[data-rowid='" + id + "']").remove();
+        if (id.err) {
+            //showErrorMessage(position)
+            switch (id.err.number) {
+                case 229:
+                    alert('У вас недостаточно прав')
+                    break;
+
+                case 547:
+                    alert('Ошибка целостности')
+                    break;
+                default:
+                    alert(id.err.message)
+                    break;
+            }
+        }
+        else if (id.infoMessage) {
+            if(id.infoMessage.message === triggerMessage) {
+                document.querySelector("tr[data-rowid='" + id.idFind + "']").remove();
+            }
+            alert(id.infoMessage.message);
+        }
     }
 }
-
 function head(key) {
     const th = document.createElement("th");
     th.append(key)

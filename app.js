@@ -272,7 +272,7 @@ app.get('/api/updatedUsers', function (req, res) {
 
 //<=========================PLANTS==============================>
 app.get('/api/plants', function (req, res) {
-   let request = new Request("SELECT * FROM [Plants]", function (err, count, rows) {
+    let request = new Request("SELECT * FROM [Plants]", function (err, count, rows) {
         if (err) return console.log(err);
         let result = rows.map(elem => {
             return elem.reduce((total, elem) => {
@@ -290,7 +290,7 @@ app.get('/api/plants', function (req, res) {
 
 app.post("/api/createPlant", jsonParser, function (req, res) {
 
-    let uniqNum, namePlant, systLocation, life, bioDescr, ecoDescr, dateOfLand, infWrOff, location, using,numOfreg;
+    let uniqNum, namePlant, systLocation, life, bioDescr, ecoDescr, dateOfLand, infWrOff, location, using, numOfreg;
     uniqNum = req.body['Уникальный номер'];
     namePlant = req.body['Название растения'];
     systLocation = req.body['Систематическое положение'];
@@ -334,7 +334,7 @@ app.post("/api/createPlant", jsonParser, function (req, res) {
 });
 
 app.put("/api/editPlants", jsonParser, function (req, res) {
-    let uniqNum, namePlant, systLocation, life, bioDescr, ecoDescr, dateOfLand, infWrOff, location, using,numOfreg;
+    let uniqNum, namePlant, systLocation, life, bioDescr, ecoDescr, dateOfLand, infWrOff, location, using, numOfreg;
 
     uniqNum = req.body['Уникальный номер'];
     namePlant = req.body['Название растения'];
@@ -348,7 +348,7 @@ app.put("/api/editPlants", jsonParser, function (req, res) {
     using = req.body['Применение'];
     numOfreg = req.body['Номер региона'];
 
-    console.log(uniqNum, namePlant, systLocation, life, bioDescr,ecoDescr,dateOfLand,infWrOff,location,using,numOfreg);
+    console.log(uniqNum, namePlant, systLocation, life, bioDescr, ecoDescr, dateOfLand, infWrOff, location, using, numOfreg);
     let request = new Request("updatePlants", function (err, count, rows) {
         if (err) return console.log(err);
         let result = rows.map(elem => {
@@ -392,14 +392,13 @@ app.get("/api/getPlant/:uniqNum", function (req, res) {
 app.delete("/api/getPlant/:uniqNum", function (req, res) {
     const uniqNum = req.params.uniqNum;
     console.log(uniqNum);
-   let request = new Request("DELETE [Plants] WHERE [Plants].[Уникальный номер] = @uniqNum", function (err, count, rows) {
+    let request = new Request("DELETE [Plants] WHERE [Plants].[Уникальный номер] = @uniqNum", function (err, count, rows) {
         if (err) return console.log(err);
         res.send(JSON.stringify(uniqNum))
     });
     request.addParameter('uniqNum', TYPES.Int, uniqNum);
     connection.execSql(request);
 });
-
 
 
 //<================CHEMICAL SUBSTANCE========================>
@@ -475,7 +474,7 @@ app.put("/api/editSubstance", jsonParser, function (req, res) {
     inf = req.body['Информация об использовании'];
     console.log(num, nameSubst, recommend, inf);
 
-    let  request = new Request("updateSubstance", function (err, count, rows) {
+    let request = new Request("updateSubstance", function (err, count, rows) {
         if (err) return console.log(err);
         let result = rows.map(elem => {
             return elem.reduce((total, elem) => {
@@ -502,7 +501,6 @@ app.delete("/api/getSubstance/:num", function (req, res) {
     request.addParameter('num', TYPES.Int, num);
     connection.execSql(request);
 });
-
 
 
 //<=====================STUDY EXCURSION=======================>
@@ -581,7 +579,7 @@ app.put("/api/editExcursion", jsonParser, function (req, res) {
     console.log(nameEx, descript, tabNum, duration);
 
 
-    let  request = new Request("UpdateExcursion", function (err, count, rows) {
+    let request = new Request("UpdateExcursion", function (err, count, rows) {
         if (err) return console.log(err);
         let result = rows.map(elem => {
             return elem.reduce((total, elem) => {
@@ -610,7 +608,7 @@ app.delete("/api/getExcursion/:id", function (req, res) {
     connection.execSql(request);
 });
 
-
+//==<===================EXCURSION REPORTS==============>
 app.get('/api/excursionReports', function (req, res) {
     request = new Request("SELECT * FROM [Excursion reports]", function (err, count, rows) {
         if (err) return console.log(err);
@@ -628,6 +626,117 @@ app.get('/api/excursionReports', function (req, res) {
     connection.execSql(request);
 })
 
+app.post("/api/createExcursionReports", jsonParser, function (req, res) {
+    let infoMessage;
+    let numEx, info, nameEx, datespend, tabnum;
+    numEx = req.body['Порядковый номер экскурсии'];
+    info = req.body['Информация о посетителях'];
+    nameEx = req.body['Название экскурсии'];
+    datespend = req.body['Дата проведения'];
+    tabnum = req.body['Табельный номер'];
+
+
+    console.log(numEx, info, nameEx, datespend, tabnum);
+
+    try {
+        let request = new Request("AddNewExcursonReport", function (err, count, rows) {
+            if (err) {
+                //return console.error(err);
+                res.send(JSON.stringify({infoMessage}))
+            }
+/*            else if (infoMessage) {
+                res.send(JSON.stringify({ infoMessage }))
+            }*/
+            else {
+                let result = rows.map(elem => {
+                    return elem.reduce((total, elem) => {
+                        total[elem.metadata.colName] = elem.value
+                        return total
+                    }, {})
+                })[0]
+                console.log(result);
+                res.send(JSON.stringify(result))
+            }
+        });
+
+        request.addParameter('numEx', TYPES.Int, numEx);
+        request.addParameter('info', TYPES.NVarChar, info);
+        request.addParameter('nameEx', TYPES.NVarChar, nameEx);
+        request.addParameter('datespend', TYPES.Date, datespend);
+        request.addParameter('tabnum', TYPES.Int, tabnum);
+
+
+        connection.callProcedure(request);
+    }
+    catch (e){
+        res.send(JSON.stringify({ infoMessage }));
+    }
+
+    connection.on('infoMessage', function (inf) {
+        infoMessage = inf
+    })
+});
+
+app.get("/api/getExcursionReports/:id", function (req, res) {
+    const id = req.params.id;
+    let request = new Request("SELECT * FROM [Excursion reports] where [Excursion reports].[Порядковый номер экскурсии] = @numEx", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        res.send(JSON.stringify(result))
+    });
+    request.addParameter('numEx', TYPES.Int, id);
+    connection.execSql(request);
+});
+
+app.put("/api/editExcursionReports", jsonParser, function (req, res) {
+    let numEx, info, nameEx, datespend, tabnum;
+    numEx = req.body['Порядковый номер экскурсии'];
+    info = req.body['Информация о посетителях'];
+    nameEx = req.body['Название экскурсии'];
+    datespend = req.body['Дата проведения'];
+    tabnum = req.body['Табельный номер'];
+
+
+    console.log(numEx, info, nameEx, datespend, tabnum);
+
+
+    let request = new Request("UpdateExcursionReport", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        res.send(JSON.stringify(result))
+    });
+    console.log(numEx);
+    request.addParameter('numEx', TYPES.Int, numEx);
+    request.addParameter('info', TYPES.NVarChar, info);
+    request.addParameter('nameEx', TYPES.NVarChar, nameEx);
+    request.addParameter('datespend', TYPES.Date, datespend);
+    request.addParameter('tabnum', TYPES.Int, tabnum);
+    connection.callProcedure(request);
+});
+
+app.delete("/api/getExcursionReport/:id", function (req, res) {
+    const id = req.params.id;
+    console.log(id);
+    let request = new Request("DELETE [Excursion reports] WHERE [Excursion reports].[Порядковый номер экскурсии] = @numEx", function (err, count, rows) {
+        if (err) return console.log(err);
+        res.send(JSON.stringify(id))
+    });
+    request.addParameter('numEx', TYPES.Int, id);
+    connection.execSql(request);
+});
+
+
+//<================= PLANT REPLACEMENT====================>
 app.get('/api/plantReplacement', function (req, res) {
     let request = new Request("SELECT * FROM [Plant replacement]", function (err, count, rows) {
         if (err) return console.log(err);
@@ -646,8 +755,104 @@ app.get('/api/plantReplacement', function (req, res) {
 })
 
 
+app.post("/api/createPlantReplacement", jsonParser, function (req, res) {
+
+    let numEx, uniqNum, namePlant, causeOfRepl, dateReplace, tabnum;
+    numEx = req.body['Порядковый номер учетной карточки'];
+    uniqNum = req.body['Уникальный номер'];
+    namePlant = req.body['Название заменяемого растения'];
+    causeOfRepl = req.body['Причина замены'];
+    dateReplace = req.body['Дата замены'];
+    tabnum = req.body['Табельный номер'];
+
+
+    console.log(numEx, uniqNum, namePlant, causeOfRepl, dateReplace, tabnum);
+    let request = new Request("addPlantReplacement", function (err, count, rows) {
+        if (err) {
+            return console.error(err);
+        }
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        console.log(result);
+        res.send(JSON.stringify(result))
+    });
+
+    request.addParameter('numEx', TYPES.Int, numEx);
+    request.addParameter('uniqNum', TYPES.Int, uniqNum);
+    request.addParameter('namePlant', TYPES.NVarChar, namePlant);
+    request.addParameter('causeOfRepl', TYPES.NVarChar, causeOfRepl);
+    request.addParameter('dateReplace', TYPES.Date, dateReplace);
+    request.addParameter('tabnum', TYPES.Int, tabnum);
+
+
+    connection.callProcedure(request);
+});
+
+app.get("/api/getPlantReplacement/:id", function (req, res) {
+    const id = req.params.id;
+    let request = new Request("SELECT * FROM [Plant replacement] where [Plant replacement].[Уникальный номер] = @uniqNum", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        res.send(JSON.stringify(result))
+    });
+    request.addParameter('uniqNum', TYPES.Int, id);
+    connection.execSql(request);
+});
+
+app.put("/api/editPlantReplacement", jsonParser, function (req, res) {
+    let numEx, uniqNum, namePlant, causeOfRepl, dateReplace, tabnum;
+    numEx = req.body['Порядковый номер учетной карточки'];
+    uniqNum = req.body['Уникальный номер'];
+    namePlant = req.body['Название заменяемого растения'];
+    causeOfRepl = req.body['Причина замены'];
+    dateReplace = req.body['Дата замены'];
+    tabnum = req.body['Табельный номер'];
+
+    console.log(numEx, uniqNum, namePlant, causeOfRepl, dateReplace, tabnum);
+
+    let request = new Request("UpdatePlantReplacement", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        res.send(JSON.stringify(result))
+    });
+    console.log(numEx);
+    request.addParameter('numEx', TYPES.Int, numEx);
+    request.addParameter('uniqNum', TYPES.Int, uniqNum);
+    request.addParameter('namePlant', TYPES.NVarChar, namePlant);
+    request.addParameter('causeOfRepl', TYPES.NVarChar, causeOfRepl);
+    request.addParameter('dateReplace', TYPES.Date, dateReplace);
+    request.addParameter('tabnum', TYPES.Int, tabnum);
+    connection.callProcedure(request);
+});
+
+app.delete("/api/getPlantReplacement/:id", function (req, res) {
+    const id = req.params.id;
+    console.log(id);
+    let request = new Request("DELETE [Plant replacement] WHERE [Plant replacement].[Уникальный номер] = @uniqNum", function (err, count, rows) {
+        if (err) return console.log(err);
+        res.send(JSON.stringify(id))
+    });
+    request.addParameter('uniqNum', TYPES.Int, id);
+    connection.execSql(request);
+});
+
+//<===================WRITE OFF CERTIFICATES========================>
 app.get('/api/writeOffCertificates', function (req, res) {
-   let request = new Request("SELECT * FROM [Write-off certificates]", function (err, count, rows) {
+    let request = new Request("SELECT * FROM [Write-off certificates]", function (err, count, rows) {
         if (err) return console.log(err);
         let result = rows.map(elem => {
             return elem.reduce((total, elem) => {
@@ -663,15 +868,124 @@ app.get('/api/writeOffCertificates', function (req, res) {
     connection.execSql(request);
 })
 
+app.post("/api/createCertificate", jsonParser, function (req, res) {
+
+    let num, name, count, causeOfOff, dateOff, tabnum;
+    num = req.body['Номер акта'];
+    name = req.body['Наименование списанного объекта'];
+    count = req.body['Количество'];
+    causeOfOff = req.body['Причины списания'];
+    dateOff = req.body['Дата списания'];
+    tabnum = req.body['Табельный номер'];
+
+
+    console.log(num, name, count, causeOfOff, dateOff, tabnum);
+    let request = new Request("addCertificate", function (err, count, rows) {
+        if (err) {
+            return console.error(err);
+        }
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        console.log(result);
+        res.send(JSON.stringify(result))
+    });
+
+    request.addParameter('num', TYPES.Int, num);
+    request.addParameter('name', TYPES.NVarChar, name);
+    request.addParameter('count', TYPES.Int, count);
+    request.addParameter('causeOfOff', TYPES.NVarChar, causeOfOff);
+    request.addParameter('dateOff', TYPES.Date, dateOff);
+    request.addParameter('tabnum', TYPES.Int, tabnum);
+
+
+    connection.callProcedure(request);
+});
+
+app.get("/api/getCertificate/:id", function (req, res) {
+    const id = req.params.id;
+    let request = new Request("SELECT * FROM [Write-off certificates] WHERE [Write-off certificates].[Номер акта] = @num", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        res.send(JSON.stringify(result))
+    });
+    request.addParameter('num', TYPES.Int, id);
+    connection.execSql(request);
+});
+
+app.put("/api/editCertificate", jsonParser, function (req, res) {
+    let num, name, count, causeOfOff, dateOff, tabnum;
+    num = req.body['Номер акта'];
+    name = req.body['Наименование списанного объекта'];
+    count = req.body['Количество'];
+    causeOfOff = req.body['Причины списания'];
+    dateOff = req.body['Дата списания'];
+    tabnum = req.body['Табельный номер'];
+
+
+    console.log(num, name, count, causeOfOff, dateOff, tabnum);
+
+    let request = new Request("UpdateCertificate", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        res.send(JSON.stringify(result))
+    });
+
+    request.addParameter('num', TYPES.Int, num);
+    request.addParameter('name', TYPES.NVarChar, name);
+    request.addParameter('count', TYPES.Int, count);
+    request.addParameter('causeOfOff', TYPES.NVarChar, causeOfOff);
+    request.addParameter('dateOff', TYPES.Date, dateOff);
+    request.addParameter('tabnum', TYPES.Int, tabnum);
+    connection.callProcedure(request);
+});
+
+app.delete("/api/getCertificate/:id", function (req, res) {
+    const id = req.params.id;
+    console.log(id);
+    let request = new Request("DELETE [Write-off certificates] WHERE [Write-off certificates].[Номер акта] = @num", function (err, count, rows) {
+        if (err) return console.log(err);
+        res.send(JSON.stringify(id))
+    });
+    request.addParameter('num', TYPES.Int, id);
+    connection.execSql(request);
+});
+
+
 //<==================================== USERS_OF_DENDROPARK ========================================>
 app.delete("/api/users/:id", function (req, res) {
+    let infoMessage;
     const idFind = req.params.id;
-    request = new Request("DELETE [Users of dendropark] WHERE [Users of dendropark].[ID] = @id", function (err, count, rows) {
-        if (err) return console.log(err);
-        res.send(JSON.stringify(idFind))
+    let request = new Request("DELETE [Users of dendropark] WHERE [Users of dendropark].[ID] = @id", function (err, count, rows) {
+        if (err) {
+            return console.log(err);
+        }
+        else if (infoMessage) {
+            res.send(JSON.stringify({ infoMessage, idFind }))
+        }
+        else {
+            res.send(JSON.stringify(idFind))
+        }
     });
+
     request.addParameter('id', TYPES.Int, idFind);
     connection.execSql(request);
+    connection.on('infoMessage', function (inf) {
+        infoMessage = inf
+    })
 });
 
 app.get("/api/getUser/:id", function (req, res) {
@@ -700,7 +1014,7 @@ app.put("/api/editUsers", jsonParser, function (req, res) {
     rank = req.body['Должность'];
     goalOfUsing = req.body['Цель использования материалов дендропарка'];
     console.log(numBook, tabNum, fio, rank, goalOfUsing);
-    request = new Request("UpdateUsersOfDendropark", function (err, count, rows) {
+    let request = new Request("UpdateUsersOfDendropark", function (err, count, rows) {
         if (err) return console.log(err);
         let result = rows.map(elem => {
             return elem.reduce((total, elem) => {
@@ -717,28 +1031,34 @@ app.put("/api/editUsers", jsonParser, function (req, res) {
     request.addParameter('position', TYPES.NVarChar, rank);
     request.addParameter('goalOfUsing', TYPES.NVarChar, goalOfUsing);
     connection.callProcedure(request);
+
+
 });
 
 app.post("/api/createUser", jsonParser, function (req, res) {
+    let infoMessage;
     let numBook, tabNum, fio, rank, goalOfUsing;
     numBook = req.body['Номер поименной книги'];
     tabNum = req.body['Табельный номер'];
     fio = req.body['ФИО'];
     rank = req.body['Должность'];
     goalOfUsing = req.body['Цель использования материалов дендропарка'];
+    console.log(infoMessage);
     /* console.log(numBook, tabNum, fio, rank, goalOfUsing); */
     let request = new Request("addUsers", function (err, count, rows) {
         if (err) {
             return console.error(err);
         }
-        let result = rows.map(elem => {
-            return elem.reduce((total, elem) => {
-                total[elem.metadata.colName] = elem.value
-                return total
-            }, {})
-        })[0]
-        console.log(result);
-        res.send(JSON.stringify(result))
+        if (infoMessage) {
+            let result = rows.map(elem => {
+                return elem.reduce((total, elem) => {
+                    total[elem.metadata.colName] = elem.value
+                    return total
+                }, {})
+            })[0]
+            console.log(result);
+            res.send(JSON.stringify({infoMessage,result}));
+        }
     });
     request.addParameter('numBook', TYPES.Int, numBook);
     request.addParameter('tabNum', TYPES.Int, tabNum);
@@ -746,6 +1066,9 @@ app.post("/api/createUser", jsonParser, function (req, res) {
     request.addParameter('position', TYPES.NVarChar, rank);
     request.addParameter('goalOfUsing', TYPES.NVarChar, goalOfUsing);
     connection.callProcedure(request);
+    connection.on('infoMessage', function (inf) {
+        infoMessage = inf
+    })
 });
 
 //<==================================== OFFICIALS ========================================>
@@ -756,7 +1079,7 @@ app.post("/api/createOfficial", jsonParser, function (req, res) {
     rank = req.body['Административная должность'];
     respons = req.body['Должностные обязанности'];
     console.log(tabNum, fio, rank, respons);
-    request = new Request("addOfficials", function (err, count, rows) {
+    let request = new Request("addOfficials", function (err, count, rows) {
         if (err) {
             return console.error(err);
         }
@@ -774,16 +1097,33 @@ app.post("/api/createOfficial", jsonParser, function (req, res) {
     request.addParameter('position', TYPES.NVarChar, rank);
     request.addParameter('workRespons', TYPES.NVarChar, respons);
     connection.callProcedure(request);
+    connection.on('message', function (inf) {
+        //infoMessage = inf
+        console.log('Received Message:', inf.utf8Data);
+        connection.sendUTF('Hi this is WebSocket server!');
+
+    })
 });
 
 app.delete("/api/officials/:tubnum", function (req, res) {
+    let infoMessage
     const idFind = req.params.tubnum;
-    request = new Request("DELETE [Officials] WHERE [Officials].[Табельный номер] = @tubnum", function (err, count, rows) {
+    let request = new Request("DELETE [Officials] WHERE [Officials].[Табельный номер] = @tubnum", function (err, count, rows) {
         if (err) return console.log(err);
         res.send(JSON.stringify(idFind))
     });
+    if (infoMessage) {
+        res.send(JSON.stringify({infoMessage}))
+    }
     request.addParameter('tubnum', TYPES.Int, idFind);
     connection.execSql(request);
+    connection.on('message', function (inf) {
+        //infoMessage = inf
+        console.log('Received Message:', inf.utf8Data);
+        connection.sendUTF('Hi this is WebSocket server!');
+
+    })
+    //alert(infoMessage);
 });
 
 app.get("/api/getOfficial/:tubnum", function (req, res) {
@@ -828,7 +1168,6 @@ app.put("/api/editOfficial", jsonParser, function (req, res) {
     request.addParameter('workRespons', TYPES.NVarChar, respons);
     connection.callProcedure(request);
 })
-
 
 
 //<=======================Хранимые процедуры======================================>
@@ -879,7 +1218,7 @@ function postPutApi(req, res, procedure, params, asArr) {
                 return total
             }, {})
         })
-        if(!asArr) {
+        if (!asArr) {
             result = result[0]
         }
         res.send(JSON.stringify(result))
@@ -888,8 +1227,8 @@ function postPutApi(req, res, procedure, params, asArr) {
         request.addParameter(param[0], param[1], req.body[param[0]]);
     }
     connection.callProcedure(request);
-    connection.on('infoMessage', function(info) {
-        if(!info){
+    connection.on('infoMessage', function (info) {
+        if (!info) {
 
         } else {
             console.log('info =========================================');
@@ -1001,7 +1340,7 @@ app.post("/api/authorization", jsonParser, function (req, res) {
 
 //==========================Представления========================>
 
-function getApi(req, res, representation){
+function getApi(req, res, representation) {
     let request = new Request(`SELECT * FROM ${representation}`, function (err, count, rows) {
         if (err) return console.log(err);
         let result = rows.map(elem => {

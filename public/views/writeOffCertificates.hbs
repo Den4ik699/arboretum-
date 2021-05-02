@@ -1,8 +1,31 @@
-<h3>{{title}}<button class="button btn-secondary" id="addButton" style="margin-left: 10px;">Добавить</button></h3>
+<h3>{{title}}<button class="button btn-secondary" id="addButton" onclick="createCertificate()" style="margin-left: 10px;">Добавить</button></h3>
 <div class="table-responsive">
     <table class="table table-dark">
         <thead id="thead1"></thead>
         <tbody id="tbody1"></tbody>
     </table>
 </div>
+
+<form class="decor">
+    <div class="form-left-decoration"></div>
+    <div class="form-right-decoration"></div>
+    <div class="circle"></div>
+    <div class="form-inner">
+        <h3>Добавление Замененных растений</h3>
+        <input id='inpNum' placeholder="Номер акта">
+        <input id='inpName' placeholder="Наименование списанного объекта">
+        <input id='inpCount' placeholder="Количество">
+        <textarea id='inpCauseOff' placeholder="Причина списания" rows="2"></textarea>
+        <input id='inpDateOff' placeholder="Дата списания">
+        <input id='inpTabNum' placeholder="Табельный номер">
+        <input id='inpBtnAdd' type="submit" value="Добавить">
+    </div>
+    <button type="button" class="close " aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</form>
+
+
+<a href="#" onclick="return up()" id="toTopBtn"
+   class="cd-top text-replace js-cd-top cd-top--is-visible cd-top--fade-out" data-abc="true">Top</a>
 <script src="writeOffCertificates.js"></script>

@@ -20,6 +20,110 @@ async function GetWriteOffCertificate() {
     }
 }
 
+async function createCertificate() {
+    const modal = document.querySelector('.decor');
+    const inpNum = document.querySelector('#inpNum'),
+        inpName = document.querySelector('#inpName'),
+        inpCount = document.querySelector('#inpCount'),
+        inpCauseOff = document.querySelector('#inpCauseOff'),
+        inpDateOff = document.querySelector('#inpDateOff'),
+        inpTabNum = document.querySelector('#inpTabNum'),
+
+        inpBtnAdd = document.querySelector('#inpBtnAdd'),
+        close = document.querySelector('.close');
+
+    function showModal() {
+        modal.style.display = 'block';
+    }
+
+    function hideModal() {
+        modal.style.display = 'none';
+    }
+
+    showModal();
+
+    close.addEventListener('click', () => {
+        hideModal();
+    })
+
+    inpBtnAdd.addEventListener('click', async (e) => {
+        e.preventDefault();
+        hideModal();
+        const response = await fetch("/api/createCertificate", {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                ['Номер акта']: inpNum.value,
+                ['Наименование списанного объекта']: inpName.value,
+                ['Количество']: inpCount.value,
+                ['Причины списания']: inpCauseOff.value,
+                ['Дата списания']: inpDateOff.value,
+                ['Табельный номер']: inpTabNum.value
+            })
+        });
+        if (response.ok === true) {
+            const user = await response.json();
+            document.querySelector("#tbody1").append(row(user));
+        }
+    })
+}
+
+async function editCertificate(id) {
+    const response = await fetch("/api/getCertificate/" + id, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+    let num, name,count, causeOfOff, dateOff, tabnum;
+    if (response.ok === true) {
+        const getCertificate = await response.json();
+        num = getCertificate['Номер акта'];
+        name = getCertificate['Наименование списанного объекта'];
+        count = getCertificate['Количество'];
+        causeOfOff = getCertificate['Причины списания'];
+        dateOff = getCertificate['Дата списания'];
+        tabnum = getCertificate['Табельный номер'];
+
+    }
+
+    const editResponse = await fetch("/api/editCertificate/", {
+        method: "PUT",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            ['Номер акта']: num,
+            ['Наименование списанного объекта']: prompt('Введите Наименование списанного объекта', `${name}`),
+            ['Количество']: prompt('Введите Количество', `${count}`),
+            ['Причины списания']: prompt('Введите Причину списания', `${causeOfOff}`),
+            ['Дата списания']: prompt('Введите Дату списания', `${dateOff}`),
+            ['Табельный номер']: prompt('Введите Табельный номер', `${tabnum}`)
+        })
+    });
+    if (editResponse.ok === true) {
+        const writeOff = await editResponse.json();
+        document.querySelector("tr[data-rowid='" + writeOff['Номер акта'] + "']").replaceWith(row(writeOff));
+    }
+}
+
+async function deleteCertificate(id) {
+    const response = await fetch("/api/getCertificate/" + id, {
+        method: "DELETE",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+    if (response.ok === true) {
+        const id = await response.json();
+        document.querySelector("tr[data-rowid='" + id + "']").remove();
+    }
+}
+
 function head(key){
     const th = document.createElement("th");
     th.append(key)
@@ -51,7 +155,7 @@ function row(certificate) {
     editLink.addEventListener("click", e => {
 
         e.preventDefault();
-        //EditUser(user['Табельный номер']);
+        editCertificate(certificate['Номер акта']);
     });
     linksTd.append(editLink);
 
@@ -62,7 +166,10 @@ function row(certificate) {
     removeLink.addEventListener("click", e => {
 
         e.preventDefault();
-        //DeleteUser(user.id);
+        let confDelItem = confirm("Вы уверены, что хотите удалить запись?");
+        if (confDelItem) {
+            deleteCertificate(certificate['Номер акта']);
+        }
     });
 
     linksTd.append(removeLink);
