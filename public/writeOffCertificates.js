@@ -66,7 +66,28 @@ async function createCertificate() {
         });
         if (response.ok === true) {
             const user = await response.json();
-            document.querySelector("#tbody1").append(row(user));
+            console.log(user);
+            console.log(user.infoMessage);
+            if (user.err) {
+                switch (user.err.number) {
+                    case 229:
+                        alert('У вас недостаточно прав')
+                        break;
+
+                    case 547:
+                        alert('Ошибка целостности')
+                        break;
+                    default:
+                        alert(user.err.message)
+                        break;
+                }
+            }
+            else if (user.infoMessage) {
+                alert(user.infoMessage.message);
+            }
+            else {
+                document.querySelector("#tbody1").append(row(user));
+            }
         }
     })
 }

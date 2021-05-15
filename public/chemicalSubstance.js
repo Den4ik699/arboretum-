@@ -30,6 +30,8 @@ async function createSubstance() {
         inpBtnAdd = document.querySelector('#inpBtnAdd'),
         close = document.querySelector('.close');
 
+
+
     function showModal() {
         modal.style.display = 'block';
     }
@@ -45,7 +47,12 @@ async function createSubstance() {
     })
 
     inpBtnAdd.addEventListener('click', async (e) => {
+        if (inpNum.value === '' || inpNameSubst.value === '' || inpRecommend.value === '' || inpInfo.value === '') {
+            alert('Не должно быть пустых полей');
+        } else {
+
         e.preventDefault();
+
         hideModal();
         const response = await fetch("/api/createSubstance", {
             method: "POST",
@@ -64,6 +71,7 @@ async function createSubstance() {
             const user = await response.json();
             document.querySelector("#tbody1").append(row(user));
         }
+    }
     })
 }
 

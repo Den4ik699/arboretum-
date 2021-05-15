@@ -22,6 +22,7 @@ async function GetUsers() {
 }
 
 async function EditUser(id) {
+    let triggerMessage = 'Данные добавлены в таблицу "Обновленные пользователи"';
     const response = await fetch("/api/getUser/" + id, {
         method: "GET",
         headers: {
@@ -39,6 +40,7 @@ async function EditUser(id) {
         goalOfUsing = getuser['Цель использования материалов дендропарка'];
     }
 
+
     const editResponse = await fetch("/api/editUsers/", {
         method: "PUT",
         headers: {
@@ -55,8 +57,32 @@ async function EditUser(id) {
         })
     });
     if (editResponse.ok === true) {
+
         const user = await editResponse.json();
-        document.querySelector("tr[data-rowid='" + user['ID'] + "']").replaceWith(row(user));
+        //console.log(user.infoMessage.message);
+        //console.log(triggerMessage);
+
+        if (user.err) {
+            switch (user.err.number) {
+                case 229:
+                    alert('У вас недостаточно прав')
+                    break;
+
+                case 547:
+                    alert('Ошибка целостности')
+                    break;
+                default:
+                    alert(user.err.message)
+                    break;
+            }
+        }
+        else if (user.infoMessage) {
+            console.log(user.result);
+            if(user.infoMessage.message === triggerMessage) {
+                document.querySelector("tr[data-rowid='" + user.result['ID'] + "']").replaceWith(row(user.result));
+            }
+           alert(user.infoMessage.message);
+       }
     }
 }
 
@@ -89,44 +115,50 @@ async function CreateUser() {
     })
 
     inpBtnAdd.addEventListener('click', async (e) => {
-    e.preventDefault();
-        hideModal();
-        const response = await fetch("/api/createUser", {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                ['Номер поименной книги']: inpNumBook.value,
-                ['Табельный номер']: inpTabNum.value,
-                ['ФИО']: inpfio.value,
-                ['Должность']: inprank.value,
-                ['Цель использования материалов дендропарка']: inpGoalOfUsing.value
-            })
-        });
-        if (response.ok === true) {
-            const user = await response.json();
-            console.log(user);
-            if (user.err) {
-                switch (user.err.number) {
-                    case 229:
-                        alert('У вас недостаточно прав')
-                        break;
 
-                    case 547:
-                        alert('Ошибка целостности')
-                        break;
-                    default:
-                        alert(user.err.message)
-                        break;
+        if (inpNumBook.value === '' || inpTabNum.value === '' || inpfio.value === '' ||
+            inpGoalOfUsing.value === '') {
+            alert('Не должно быть пустых полей');
+        } else {
+
+            e.preventDefault();
+            hideModal();
+            const response = await fetch("/api/createUser", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    ['Номер поименной книги']: inpNumBook.value,
+                    ['Табельный номер']: inpTabNum.value,
+                    ['ФИО']: inpfio.value,
+                    ['Должность']: inprank.value,
+                    ['Цель использования материалов дендропарка']: inpGoalOfUsing.value
+                })
+            });
+            if (response.ok === true) {
+                const user = await response.json();
+                console.log(user);
+                if (user.err) {
+                    switch (user.err.number) {
+                        case 229:
+                            alert('У вас недостаточно прав')
+                            break;
+
+                        case 547:
+                            alert('Ошибка целостности')
+                            break;
+                        default:
+                            alert(user.err.message)
+                            break;
+                    }
+                } else if (user.infoMessage) {
+                    if (user.infoMessage.message === triggerMessage) {
+                        document.querySelector("#tbody1").append(row(user.result));
+                    }
+                    alert(user.infoMessage.message);
                 }
-            }
-            else if (user.infoMessage) {
-                if(user.infoMessage.message === triggerMessage) {
-                    document.querySelector("#tbody1").append(row(user.result));
-                }
-                alert(user.infoMessage.message);
             }
         }
     })
@@ -143,7 +175,6 @@ async function DeleteUser(id) {
     if (response.ok === true) {
         const id = await response.json();
         if (id.err) {
-            //showErrorMessage(position)
             switch (id.err.number) {
                 case 229:
                     alert('У вас недостаточно прав')

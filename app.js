@@ -145,8 +145,21 @@ app.get("/updatedUsers", function (request, response) {
     })
 })
 
+app.get("/registrationCard", function (request, response) {
+    response.render("registrationCard", {
+        title: `Учетная карточка`
+    })
+})
+
+app.get("/chemicalSubstancesPlants", function (request, response) {
+    response.render("ChemicalSubstancesPlants", {
+        title: `Хим Вещества Растения`
+    })
+})
+
+
 app.get('/api/usersOfDendropark', function (req, res) {
-    request = new Request("SELECT * FROM [Users of dendropark]", function (err, count, rows) {
+    let request = new Request("SELECT * FROM [Users of dendropark]", function (err, count, rows) {
         console.log(rows);
         if (err) return console.log(err);
         let result = rows.map(elem => {
@@ -291,6 +304,7 @@ app.get('/api/plants', function (req, res) {
 app.post("/api/createPlant", jsonParser, function (req, res) {
 
     let uniqNum, namePlant, systLocation, life, bioDescr, ecoDescr, dateOfLand, infWrOff, location, using, numOfreg;
+    let infoMessage;
     uniqNum = req.body['Уникальный номер'];
     namePlant = req.body['Название растения'];
     systLocation = req.body['Систематическое положение'];
@@ -306,16 +320,19 @@ app.post("/api/createPlant", jsonParser, function (req, res) {
     //console.log(uniqNum, namePlant, systLocation, life, bioDescr,ecoDescr,dateOfLand,infWrOff,location,using,numOfreg);
     let request = new Request("addPlants", function (err, count, rows) {
         if (err) {
-            return console.error(err);
+            res.send(JSON.stringify({infoMessage}))
+                //return console.error(err);
         }
-        let result = rows.map(elem => {
-            return elem.reduce((total, elem) => {
-                total[elem.metadata.colName] = elem.value
-                return total
-            }, {})
-        })[0]
-        console.log(result);
-        res.send(JSON.stringify(result))
+        else {
+            let result = rows.map(elem => {
+                return elem.reduce((total, elem) => {
+                    total[elem.metadata.colName] = elem.value
+                    return total
+                }, {})
+            })[0]
+            console.log(result);
+            res.send(JSON.stringify(result))
+        }
     });
 
     request.addParameter('uniqNum', TYPES.Int, uniqNum);
@@ -331,6 +348,10 @@ app.post("/api/createPlant", jsonParser, function (req, res) {
     request.addParameter('numOfreg', TYPES.Int, numOfreg);
 
     connection.callProcedure(request);
+
+    connection.on('infoMessage', function (inf) {
+        infoMessage = inf
+    })
 });
 
 app.put("/api/editPlants", jsonParser, function (req, res) {
@@ -400,6 +421,216 @@ app.delete("/api/getPlant/:uniqNum", function (req, res) {
     connection.execSql(request);
 });
 
+
+//<=====================REGISTRATION CARD====================>
+
+app.get('/api/registrationCard', function (req, res) {
+    let request = new Request("SELECT * FROM [Registration card]", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })
+        res.send(JSON.stringify(result))
+    });
+    request.on('requestCompleted', function () {
+        console.log('запрос к таблице Registration card завершён')
+    });
+    connection.execSql(request);
+})
+
+app.post("/api/createRegistrationCard", jsonParser, function (req, res) {
+
+    let uniqNum, namePlant, systLocation, life, dateOfLand, infWrOff, location;
+    uniqNum = req.body['Уникальный номер'];
+    namePlant = req.body['Название растения'];
+    systLocation = req.body['Систематическое положение'];
+    life = req.body['Жизненная форма'];
+    dateOfLand = req.body['Дата посадки'];
+    infWrOff = req.body['Информация о списании'];
+    location = req.body['Местоположение в дендропарке'];
+
+
+    console.log(uniqNum, namePlant, systLocation, life,dateOfLand,infWrOff,location);
+    let request = new Request("addRegistrationCard", function (err, count, rows) {
+        if (err) {
+            return console.error(err);
+        }
+        else {
+            let result = rows.map(elem => {
+                return elem.reduce((total, elem) => {
+                    total[elem.metadata.colName] = elem.value
+                    return total
+                }, {})
+            })[0]
+            res.send(JSON.stringify(result))
+        }
+    });
+
+    request.addParameter('uniqNum', TYPES.Int, uniqNum);
+    request.addParameter('namePlant', TYPES.NVarChar, namePlant);
+    request.addParameter('systLocation', TYPES.NVarChar, systLocation);
+    request.addParameter('life', TYPES.NVarChar, life);
+    request.addParameter('dateOfLand', TYPES.Date, dateOfLand);
+    request.addParameter('infWrOff', TYPES.NVarChar, infWrOff);
+    request.addParameter('location', TYPES.NVarChar, location);
+
+    connection.callProcedure(request);
+
+});
+
+app.put("/api/editRegistrationCard", jsonParser, function (req, res) {
+    let uniqNum, namePlant, systLocation, life, dateOfLand, infWrOff, location;
+    uniqNum = req.body['Уникальный номер'];
+    namePlant = req.body['Название растения'];
+    systLocation = req.body['Систематическое положение'];
+    life = req.body['Жизненная форма'];
+    dateOfLand = req.body['Дата посадки'];
+    infWrOff = req.body['Информация о списании'];
+    location = req.body['Местоположение в дендропарке'];
+
+    //console.log(uniqNum, namePlant, systLocation, life, bioDescr, ecoDescr, dateOfLand, infWrOff, location, using, numOfreg);
+    let request = new Request("updateRegistrationCard", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        res.send(JSON.stringify(result))
+    });
+    request.addParameter('uniqNum', TYPES.Int, uniqNum);
+    request.addParameter('namePlant', TYPES.NVarChar, namePlant);
+    request.addParameter('systLocation', TYPES.NVarChar, systLocation);
+    request.addParameter('life', TYPES.NVarChar, life);
+    request.addParameter('dateOfLand', TYPES.Date, dateOfLand);
+    request.addParameter('infWrOff', TYPES.NVarChar, infWrOff);
+    request.addParameter('location', TYPES.NVarChar, location);
+
+    connection.callProcedure(request);
+});
+
+app.get("/api/getRegistrationCard/:uniqNum", function (req, res) {
+    const uniqNum = req.params.uniqNum;
+    let request = new Request("SELECT * FROM [Registration card] where [Registration card].[Уникальный номер] = @uniqNum", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        res.send(JSON.stringify(result))
+    });
+    request.addParameter('uniqNum', TYPES.Int, uniqNum);
+    connection.execSql(request);
+});
+
+app.delete("/api/getRegistrationCard/:uniqNum", function (req, res) {
+    const uniqNum = req.params.uniqNum;
+    console.log(uniqNum);
+    let request = new Request("DELETE [Registration card] WHERE [Registration card].[Уникальный номер] = @uniqNum", function (err, count, rows) {
+        if (err) return console.log(err);
+        res.send(JSON.stringify(uniqNum))
+    });
+    request.addParameter('uniqNum', TYPES.Int, uniqNum);
+    connection.execSql(request);
+});
+
+//<======================ChemicalSubstancesPlants=================>
+
+app.get('/api/chemicalSubstancesPlants', function (req, res) {
+  let request = new Request("SELECT * FROM [Chemical substances Plants]", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })
+        res.send(JSON.stringify(result))
+    });
+    request.on('requestCompleted', function () {
+        console.log('запрос к таблице [Chemical substances Plants] завершён')
+    });
+    connection.execSql(request);
+})
+
+
+//<===============PlantsUsersOfDendropark==================>
+app.get('/api/PlantsUsersOfDendropark', function (req, res) {
+    let request = new Request("SELECT * FROM [Plants Users of dendropark]", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })
+        res.send(JSON.stringify(result))
+    });
+    request.on('requestCompleted', function () {
+        console.log('запрос к таблице [Plants Users of dendropark] завершён')
+    });
+    connection.execSql(request);
+})
+
+app.get("/PlantsUsersOfDendropark", function (request, response) {
+    response.render("PlantsUsersOfDendropark", {
+        title: `Растения Пользователи Дендропарка`
+    })
+})
+
+//<===================The region of dendropark Study excursions===================>
+app.get('/api/TheRegionOfDendroparkStudyExcursions', function (req, res) {
+    let request = new Request("SELECT * FROM [The region of dendropark Study excursions]", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })
+        res.send(JSON.stringify(result))
+    });
+    request.on('requestCompleted', function () {
+        console.log('запрос к таблице [The region of dendropark Study excursions] завершён')
+    });
+    connection.execSql(request);
+})
+
+app.get("/TheRegionOfDendroparkStudyExcursions", function (request, response) {
+    response.render("TheRegionOfDendroparkStudyExcursions", {
+        title: `Регион Дендропарка Учебные Экскурсии`
+    })
+})
+
+//<=========================UsersOfDendroparkStudyExcursions=======================>
+app.get('/api/UsersOfDendroparkStudyExcursions', function (req, res) {
+    let request = new Request("SELECT * FROM [Users of dendropark Study excursions]", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })
+        res.send(JSON.stringify(result))
+    });
+    request.on('requestCompleted', function () {
+        console.log('запрос к таблице [The region of dendropark Study excursions] завершён')
+    });
+    connection.execSql(request);
+})
+
+app.get("/UsersOfDendroparkStudyExcursions", function (request, response) {
+    response.render("UsersOfDendroparkStudyExcursions", {
+        title: `Пользователи Дендропарка Учебные Экскурсии`
+    })
+})
 
 //<================CHEMICAL SUBSTANCE========================>
 app.get('/api/chemicalSubstance', function (req, res) {
@@ -610,7 +841,7 @@ app.delete("/api/getExcursion/:id", function (req, res) {
 
 //==<===================EXCURSION REPORTS==============>
 app.get('/api/excursionReports', function (req, res) {
-    request = new Request("SELECT * FROM [Excursion reports]", function (err, count, rows) {
+    let request = new Request("SELECT * FROM [Excursion reports]", function (err, count, rows) {
         if (err) return console.log(err);
         let result = rows.map(elem => {
             return elem.reduce((total, elem) => {
@@ -644,9 +875,9 @@ app.post("/api/createExcursionReports", jsonParser, function (req, res) {
                 //return console.error(err);
                 res.send(JSON.stringify({infoMessage}))
             }
-/*            else if (infoMessage) {
-                res.send(JSON.stringify({ infoMessage }))
-            }*/
+            /*            else if (infoMessage) {
+                            res.send(JSON.stringify({ infoMessage }))
+                        }*/
             else {
                 let result = rows.map(elem => {
                     return elem.reduce((total, elem) => {
@@ -667,9 +898,8 @@ app.post("/api/createExcursionReports", jsonParser, function (req, res) {
 
 
         connection.callProcedure(request);
-    }
-    catch (e){
-        res.send(JSON.stringify({ infoMessage }));
+    } catch (e) {
+        res.send(JSON.stringify({infoMessage}));
     }
 
     connection.on('infoMessage', function (inf) {
@@ -704,16 +934,20 @@ app.put("/api/editExcursionReports", jsonParser, function (req, res) {
 
     console.log(numEx, info, nameEx, datespend, tabnum);
 
-
+    let infoMessage;
     let request = new Request("UpdateExcursionReport", function (err, count, rows) {
-        if (err) return console.log(err);
-        let result = rows.map(elem => {
-            return elem.reduce((total, elem) => {
-                total[elem.metadata.colName] = elem.value
-                return total
-            }, {})
-        })[0]
-        res.send(JSON.stringify(result))
+        if (err) {
+            //return console.log(err);
+            res.send(JSON.stringify({infoMessage}))
+        } else {
+            let result = rows.map(elem => {
+                return elem.reduce((total, elem) => {
+                    total[elem.metadata.colName] = elem.value
+                    return total
+                }, {})
+            })[0]
+            res.send(JSON.stringify(result));
+        }
     });
     console.log(numEx);
     request.addParameter('numEx', TYPES.Int, numEx);
@@ -722,6 +956,10 @@ app.put("/api/editExcursionReports", jsonParser, function (req, res) {
     request.addParameter('datespend', TYPES.Date, datespend);
     request.addParameter('tabnum', TYPES.Int, tabnum);
     connection.callProcedure(request);
+
+    connection.on('infoMessage', function (inf) {
+        infoMessage = inf
+    })
 });
 
 app.delete("/api/getExcursionReport/:id", function (req, res) {
@@ -756,7 +994,7 @@ app.get('/api/plantReplacement', function (req, res) {
 
 
 app.post("/api/createPlantReplacement", jsonParser, function (req, res) {
-
+    let infoMessage;
     let numEx, uniqNum, namePlant, causeOfRepl, dateReplace, tabnum;
     numEx = req.body['Порядковый номер учетной карточки'];
     uniqNum = req.body['Уникальный номер'];
@@ -768,17 +1006,19 @@ app.post("/api/createPlantReplacement", jsonParser, function (req, res) {
 
     console.log(numEx, uniqNum, namePlant, causeOfRepl, dateReplace, tabnum);
     let request = new Request("addPlantReplacement", function (err, count, rows) {
-        if (err) {
-            return console.error(err);
+        if (err){
+            res.send(JSON.stringify({infoMessage}));
         }
-        let result = rows.map(elem => {
-            return elem.reduce((total, elem) => {
-                total[elem.metadata.colName] = elem.value
-                return total
-            }, {})
-        })[0]
-        console.log(result);
-        res.send(JSON.stringify(result))
+        else {
+            let result = rows.map(elem => {
+                return elem.reduce((total, elem) => {
+                    total[elem.metadata.colName] = elem.value
+                    return total
+                }, {})
+            })[0]
+            console.log(result);
+            res.send(JSON.stringify(result));
+        }
     });
 
     request.addParameter('numEx', TYPES.Int, numEx);
@@ -788,8 +1028,11 @@ app.post("/api/createPlantReplacement", jsonParser, function (req, res) {
     request.addParameter('dateReplace', TYPES.Date, dateReplace);
     request.addParameter('tabnum', TYPES.Int, tabnum);
 
-
     connection.callProcedure(request);
+
+    connection.on('infoMessage', function (inf) {
+        infoMessage = inf
+    })
 });
 
 app.get("/api/getPlantReplacement/:id", function (req, res) {
@@ -870,7 +1113,7 @@ app.get('/api/writeOffCertificates', function (req, res) {
 
 app.post("/api/createCertificate", jsonParser, function (req, res) {
 
-    let num, name, count, causeOfOff, dateOff, tabnum;
+    let num, name, count, causeOfOff, dateOff, tabnum, infoMessage;
     num = req.body['Номер акта'];
     name = req.body['Наименование списанного объекта'];
     count = req.body['Количество'];
@@ -880,29 +1123,39 @@ app.post("/api/createCertificate", jsonParser, function (req, res) {
 
 
     console.log(num, name, count, causeOfOff, dateOff, tabnum);
-    let request = new Request("addCertificate", function (err, count, rows) {
-        if (err) {
-            return console.error(err);
-        }
-        let result = rows.map(elem => {
-            return elem.reduce((total, elem) => {
-                total[elem.metadata.colName] = elem.value
-                return total
-            }, {})
-        })[0]
-        console.log(result);
-        res.send(JSON.stringify(result))
-    });
+    try {
+        let request = new Request("addCertificate", function (err, count, rows) {
 
-    request.addParameter('num', TYPES.Int, num);
-    request.addParameter('name', TYPES.NVarChar, name);
-    request.addParameter('count', TYPES.Int, count);
-    request.addParameter('causeOfOff', TYPES.NVarChar, causeOfOff);
-    request.addParameter('dateOff', TYPES.Date, dateOff);
-    request.addParameter('tabnum', TYPES.Int, tabnum);
+            if (err) {
+                res.send(JSON.stringify({infoMessage}))
+            }
+            else {
+                let result = rows.map(elem => {
+                    return elem.reduce((total, elem) => {
+                        total[elem.metadata.colName] = elem.value
+                        return total
+                    }, {})
+                })[0]
+                res.send(JSON.stringify(result))
+            }
+        });
 
+        request.addParameter('num', TYPES.Int, num);
+        request.addParameter('name', TYPES.NVarChar, name);
+        request.addParameter('count', TYPES.Int, count);
+        request.addParameter('causeOfOff', TYPES.NVarChar, causeOfOff);
+        request.addParameter('dateOff', TYPES.Date, dateOff);
+        request.addParameter('tabnum', TYPES.Int, tabnum);
+        connection.callProcedure(request);
+    }
 
-    connection.callProcedure(request);
+    catch (e){
+        res.send(JSON.stringify({infoMessage}));
+    }
+
+    connection.on('infoMessage', function (inf) {
+        infoMessage = inf
+    })
 });
 
 app.get("/api/getCertificate/:id", function (req, res) {
@@ -972,11 +1225,9 @@ app.delete("/api/users/:id", function (req, res) {
     let request = new Request("DELETE [Users of dendropark] WHERE [Users of dendropark].[ID] = @id", function (err, count, rows) {
         if (err) {
             return console.log(err);
-        }
-        else if (infoMessage) {
-            res.send(JSON.stringify({ infoMessage, idFind }))
-        }
-        else {
+        } else if (infoMessage) {
+            res.send(JSON.stringify({infoMessage, idFind}))
+        } else {
             res.send(JSON.stringify(idFind))
         }
     });
@@ -990,7 +1241,7 @@ app.delete("/api/users/:id", function (req, res) {
 
 app.get("/api/getUser/:id", function (req, res) {
     const idFind = req.params.id;
-    request = new Request("SELECT * FROM [Users of dendropark] WHERE [Users of dendropark].[ID]= @id", function (err, count, rows) {
+    let request = new Request("SELECT * FROM [Users of dendropark] WHERE [Users of dendropark].[ID]= @id", function (err, count, rows) {
         if (err) return console.log(err);
         let result = rows.map(elem => {
             return elem.reduce((total, elem) => {
@@ -1005,7 +1256,7 @@ app.get("/api/getUser/:id", function (req, res) {
 });
 
 app.put("/api/editUsers", jsonParser, function (req, res) {
-    let idFind
+    let idFind, infoMessage;
     let numBook, tabNum, fio, rank, goalOfUsing;
     idFind = req.body['ID']
     numBook = req.body['Номер поименной книги'];
@@ -1015,14 +1266,19 @@ app.put("/api/editUsers", jsonParser, function (req, res) {
     goalOfUsing = req.body['Цель использования материалов дендропарка'];
     console.log(numBook, tabNum, fio, rank, goalOfUsing);
     let request = new Request("UpdateUsersOfDendropark", function (err, count, rows) {
-        if (err) return console.log(err);
-        let result = rows.map(elem => {
-            return elem.reduce((total, elem) => {
-                total[elem.metadata.colName] = elem.value
-                return total
-            }, {})
-        })[0]
-        res.send(JSON.stringify(result))
+        if (err) {
+            return console.log(err);
+        }
+        if (infoMessage) {
+            let result = rows.map(elem => {
+                return elem.reduce((total, elem) => {
+                    total[elem.metadata.colName] = elem.value
+                    return total
+                }, {})
+            })[0]
+            console.log(result);
+            res.send(JSON.stringify({infoMessage, result}));
+        }
     });
     request.addParameter('id', TYPES.Int, idFind);
     request.addParameter('numBook', TYPES.Int, numBook);
@@ -1032,7 +1288,9 @@ app.put("/api/editUsers", jsonParser, function (req, res) {
     request.addParameter('goalOfUsing', TYPES.NVarChar, goalOfUsing);
     connection.callProcedure(request);
 
-
+    connection.on('infoMessage', function (inf) {
+        infoMessage = inf
+    })
 });
 
 app.post("/api/createUser", jsonParser, function (req, res) {
@@ -1043,8 +1301,7 @@ app.post("/api/createUser", jsonParser, function (req, res) {
     fio = req.body['ФИО'];
     rank = req.body['Должность'];
     goalOfUsing = req.body['Цель использования материалов дендропарка'];
-    console.log(infoMessage);
-    /* console.log(numBook, tabNum, fio, rank, goalOfUsing); */
+
     let request = new Request("addUsers", function (err, count, rows) {
         if (err) {
             return console.error(err);
@@ -1057,7 +1314,7 @@ app.post("/api/createUser", jsonParser, function (req, res) {
                 }, {})
             })[0]
             console.log(result);
-            res.send(JSON.stringify({infoMessage,result}));
+            res.send(JSON.stringify({infoMessage, result}));
         }
     });
     request.addParameter('numBook', TYPES.Int, numBook);
@@ -1066,6 +1323,7 @@ app.post("/api/createUser", jsonParser, function (req, res) {
     request.addParameter('position', TYPES.NVarChar, rank);
     request.addParameter('goalOfUsing', TYPES.NVarChar, goalOfUsing);
     connection.callProcedure(request);
+
     connection.on('infoMessage', function (inf) {
         infoMessage = inf
     })
@@ -1073,6 +1331,7 @@ app.post("/api/createUser", jsonParser, function (req, res) {
 
 //<==================================== OFFICIALS ========================================>
 app.post("/api/createOfficial", jsonParser, function (req, res) {
+    let infoMessage;
     let tabNum, fio, rank, respons;
     tabNum = req.body['Табельный номер'];
     fio = req.body['ФИО'];
@@ -1082,26 +1341,26 @@ app.post("/api/createOfficial", jsonParser, function (req, res) {
     let request = new Request("addOfficials", function (err, count, rows) {
         if (err) {
             return console.error(err);
+            //res.send(JSON.stringify(err))
         }
-        let result = rows.map(elem => {
-            return elem.reduce((total, elem) => {
-                total[elem.metadata.colName] = elem.value
-                return total
-            }, {})
-        })[0]
-        console.log(result);
-        res.send(JSON.stringify(result))
+        if (infoMessage) {
+            let result = rows.map(elem => {
+                return elem.reduce((total, elem) => {
+                    total[elem.metadata.colName] = elem.value
+                    return total
+                }, {})
+            })[0]
+            console.log(result);
+            res.send(JSON.stringify({result, infoMessage}))
+        }
     });
     request.addParameter('tubnum', TYPES.Int, tabNum);
     request.addParameter('fio', TYPES.NVarChar, fio);
     request.addParameter('position', TYPES.NVarChar, rank);
     request.addParameter('workRespons', TYPES.NVarChar, respons);
     connection.callProcedure(request);
-    connection.on('message', function (inf) {
-        //infoMessage = inf
-        console.log('Received Message:', inf.utf8Data);
-        connection.sendUTF('Hi this is WebSocket server!');
-
+    connection.on('infoMessage', function (inf) {
+        infoMessage = inf
     })
 });
 
@@ -1109,26 +1368,26 @@ app.delete("/api/officials/:tubnum", function (req, res) {
     let infoMessage
     const idFind = req.params.tubnum;
     let request = new Request("DELETE [Officials] WHERE [Officials].[Табельный номер] = @tubnum", function (err, count, rows) {
-        if (err) return console.log(err);
-        res.send(JSON.stringify(idFind))
+        if (err) {
+            return console.log(err);
+        } else if (infoMessage) {
+            res.send(JSON.stringify({idFind, infoMessage}))
+        } else {
+            res.send(JSON.stringify(idFind))
+        }
     });
-    if (infoMessage) {
-        res.send(JSON.stringify({infoMessage}))
-    }
+
     request.addParameter('tubnum', TYPES.Int, idFind);
     connection.execSql(request);
-    connection.on('message', function (inf) {
-        //infoMessage = inf
-        console.log('Received Message:', inf.utf8Data);
-        connection.sendUTF('Hi this is WebSocket server!');
-
+    console.log(infoMessage);
+    connection.on('infoMessage', function (inf) {
+        infoMessage = inf
     })
-    //alert(infoMessage);
 });
 
 app.get("/api/getOfficial/:tubnum", function (req, res) {
     const tubnum = req.params.tubnum;
-    request = new Request("SELECT * FROM Officials WHERE Officials.[Табельный номер]= @tubnum", function (err, count, rows) {
+    let request = new Request("SELECT * FROM Officials WHERE Officials.[Табельный номер]= @tubnum", function (err, count, rows) {
         if (err) return console.log(err);
         let result = rows.map(elem => {
             return elem.reduce((total, elem) => {
@@ -1151,7 +1410,7 @@ app.put("/api/editOfficial", jsonParser, function (req, res) {
     rank = req.body['Административная должность'];
     respons = req.body['Должностные обязанности'];
     console.log(tabNum, fio, rank, respons);
-    request = new Request("updateOfficial", function (err, count, rows) {
+    let request = new Request("updateOfficial", function (err, count, rows) {
         if (err) return console.log(err);
         let result = rows.map(elem => {
             return elem.reduce((total, elem) => {
@@ -1169,6 +1428,184 @@ app.put("/api/editOfficial", jsonParser, function (req, res) {
     connection.callProcedure(request);
 })
 
+//<=================THE REGION OF DENDROPARK==============>
+
+app.get('/api/regionOfDendropark', function (req, res) {
+    let request = new Request("SELECT * FROM [The region of dendropark]", function (err, count, rows) {
+        console.log(rows);
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })
+        res.send(JSON.stringify(result))
+    });
+    request.on('requestCompleted', function () {
+        console.log('запрос к таблице [The region of dendropark] завершён')
+    });
+    connection.execSql(request);
+})
+
+app.get("/regionOfDendropark", function (request, response) {
+    response.render("regionOfDendropark", {
+        title: `Регионы дендропарка`
+    })
+})
+
+
+app.post("/api/createRegion", jsonParser, function (req, res) {
+    let infoMessage;
+    let num, name, location, info;
+    num = req.body['Номер региона'];
+    name = req.body['Название региона'];
+    location = req.body['Положение на схеме'];
+    info = req.body['Краткая информация'];
+    console.log(num, name, location, info);
+    let request = new Request("addRegion", function (err, count, rows) {
+        if (err) {
+            return console.error(err);
+            //res.send(JSON.stringify(err))
+        }
+        else {
+            let result = rows.map(elem => {
+                return elem.reduce((total, elem) => {
+                    total[elem.metadata.colName] = elem.value
+                    return total
+                }, {})
+            })[0]
+            console.log(result);
+            res.send(JSON.stringify({result, infoMessage}))
+        }
+    });
+    request.addParameter('num', TYPES.Int, num);
+    request.addParameter('name', TYPES.NVarChar, name);
+    request.addParameter('location', TYPES.NVarChar, location);
+    request.addParameter('info', TYPES.NVarChar, info);
+    connection.callProcedure(request);
+});
+
+app.put("/api/editRegion", jsonParser, function (req, res) {
+    let num, name, location, info;
+    num = req.body['Номер региона'];
+    name = req.body['Название региона'];
+    location = req.body['Положение на схеме'];
+    info = req.body['Краткая информация'];
+    console.log(num, name, location, info);
+    let request = new Request("updateRegion", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        console.log(result);
+        res.send(JSON.stringify(result));
+    })
+    request.addParameter('num', TYPES.Int, num);
+    request.addParameter('name', TYPES.NVarChar, name);
+    request.addParameter('location', TYPES.NVarChar, location);
+    request.addParameter('info', TYPES.NVarChar, info);
+    connection.callProcedure(request);
+})
+
+app.get("/api/getRegion/:num", function (req, res) {
+    const num = req.params.num;
+    let request = new Request("SELECT * FROM [The region of dendropark] WHERE [The region of dendropark].[Номер региона] = @num", function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })[0]
+        res.send(JSON.stringify(result))
+    });
+    request.addParameter('num', TYPES.Int, num);
+    connection.execSql(request);
+});
+
+app.delete("/api/getRegion/:num", function (req, res) {
+    const num = req.params.num;
+    let request = new Request("DELETE [The region of dendropark] WHERE [The region of dendropark].[Номер региона] = @num", function (err, count, rows) {
+        if (err) return console.log(err);
+        res.send(JSON.stringify(num))
+    });
+    request.addParameter('num', TYPES.Int, num);
+    connection.execSql(request);
+});
+
+//<=======================КУРСОРЫ======================================>
+app.get("/cursorCountOfPlants", function (request, response) {
+    response.render("cursorCountOfPlants", {
+        title: `Количество записей в таблице Растения`
+    })
+})
+
+app.get("/api/cursorCountOfPlants", jsonParser, function (req, res) {
+    getCursApi(req, res, 'cursCountOfPlants')
+});
+
+app.get("/cursCountOfCards", function (request, response) {
+    response.render("cursCountOfCards", {
+        title: `Количество записей в таблице Учетная карточка`
+    })
+})
+
+app.get("/api/cursCountOfCards", jsonParser, function (req, res) {
+    getCursApi(req, res, 'cursCountOfCards')
+});
+
+app.get("/cursCountOfChemicalSubs", function (request, response) {
+    response.render("cursCountOfChemicalSubs", {
+        title: `Количество записей в таблице Химические вещества`
+    })
+})
+
+app.get("/api/cursCountOfChemicalSubs", jsonParser, function (req, res) {
+    getCursApi(req, res, 'cursCountOfChemicalSubs')
+});
+
+function getCursApi(req, res, cursor) {
+    let request = new Request(cursor, function (err, count, rows) {
+        if (err) return console.log(err);
+        let result = rows.map(elem => {
+            return elem.reduce((total, elem) => {
+                total[elem.metadata.colName] = elem.value
+                return total
+            }, {})
+        })
+        console.log(result)
+        res.send(JSON.stringify(result));
+    });
+    request.on('requestCompleted', function () {
+        console.log(`запрос к курсору ${cursor} завершён`)
+    });
+    connection.execSql(request);
+}
+
+app.get("/cursCountOfWriteOffPlants", function (request, response) {
+    response.render("cursCountOfWriteOffPlants", {
+        title: `Общее количество списанных растений`
+    })
+})
+
+app.get("/api/cursCountOfWriteOffPlants", jsonParser, function (req, res) {
+    getCursApi(req, res, 'cursCountOfWriteOffPlants')
+});
+
+
+app.get("/cursCountOfDeletedUsers", function (request, response) {
+    response.render("cursCountOfDeletedUsers", {
+        title: `Общее количество удаленных растений`
+    })
+})
+
+app.get("/api/cursCountOfDeletedUsers", jsonParser, function (req, res) {
+    getCursApi(req, res, 'cursCountOfDeletedUsers')
+});
 
 //<=======================Хранимые процедуры======================================>
 app.post("/api/countOfPlants", jsonParser, function (req, res) {

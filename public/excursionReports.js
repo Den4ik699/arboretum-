@@ -122,7 +122,26 @@ async function editReport(id) {
     });
     if (editResponse.ok === true) {
         const report = await editResponse.json();
-        document.querySelector("tr[data-rowid='" + report['Порядковый номер экскурсии'] + "']").replaceWith(row(report));
+        if (report.err) {
+            switch (report.err.number) {
+                case 229:
+                    alert('У вас недостаточно прав')
+                    break;
+
+                case 547:
+                    alert('Ошибка целостности')
+                    break;
+                default:
+                    alert(report.err.message)
+                    break;
+            }
+        }
+        else if (report.infoMessage) {
+            alert(report.infoMessage.message);
+        }
+        else {
+            document.querySelector("tr[data-rowid='" + report['Порядковый номер экскурсии'] + "']").replaceWith(row(report));
+        }
     }
 }
 

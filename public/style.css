@@ -226,7 +226,7 @@ a:hover {
    color: #1b2024;
    position: fixed;
    bottom: 10px;
-   left: 10px;
+   right: 10px;
    padding: 10px;
    background-color: #fbae24;
 }
@@ -236,7 +236,9 @@ a:hover {
 }
 
 
-
+#exit:hover{
+   color: #fbae24;
+}
 /* authenticationForm */
 
 

@@ -1,5 +1,5 @@
 <h3>{{title}}
-    <button class="button btn-secondary" id="addButton" onclick="createOfficial()" style="margin-left: 10px;">Добавить
+    <button class="button btn-secondary" id="addButton" onclick="createRegion()" style="margin-left: 10px;">Добавить
     </button>
 </h3>
 <div class="table-responsive">
@@ -15,11 +15,11 @@
     <div class="form-right-decoration"></div>
     <div class="circle"></div>
     <div class="form-inner">
-        <h3>Добавление должностного лица</h3>
-        <input required id='inpTabNum' type="tabNum" placeholder="Табельный номер">
-        <input required id='inpfio' type="fio" placeholder="ФИО">
-        <input required id='inprank' type="rank" placeholder="Административная должность">
-        <input required id='inprespons' type="rank" placeholder="Должностные обязанности">
+        <h3>Добавление региона</h3>
+        <input required id='inpNum' type="number" placeholder="Номер региона">
+        <input required id='inpName' type="text" placeholder="Название региона">
+        <input required id='inpLocation' type="text" placeholder="Положение на схеме">
+        <input required id='inpInfo' type="text" placeholder="Краткая информация">
         <input required id='inpBtnAdd' type="submit" value="Добавить">
     </div>
     <button type="button" class="close " aria-label="Close">
@@ -31,4 +31,4 @@
 <a href="#" onclick="return up()" id="toTopBtn"
    class="cd-top text-replace js-cd-top cd-top--is-visible cd-top--fade-out" data-abc="true">Top</a>
 
-<script src="Officials.js"></script>
+<script src="regionOfDendropark.js"></script>

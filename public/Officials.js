@@ -28,6 +28,7 @@ function head(key) {
 
 
 async function createOfficial() {
+    let triggerMessage = 'Данные добавлены в таблицу "Добавленные должностные лица"'
     const modal = document.querySelector('.decor');
     const inpTabNum = document.querySelector('#inpTabNum'),
         inpfio = document.querySelector('#inpfio'),
@@ -52,24 +53,47 @@ async function createOfficial() {
     })
 
     inpBtnAdd.addEventListener('click', async (e) => {
-        e.preventDefault();
-        hideModal();
-        const response = await fetch("/api/createOfficial", {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                ['Табельный номер']: inpTabNum.value,
-                ['ФИО']: inpfio.value,
-                ['Административная должность']: inprank.value,
-                ['Должностные обязанности']: inprespons.value
-            })
-        });
-        if (response.ok === true) {
-            const officials = await response.json();
-            document.querySelector("#tbody1").append(row(officials));
+        if (inprank.value === '' || inpTabNum.value === '' || inpfio.value === '') {
+            alert('Не должно быть пустых полей');
+        } else {
+
+            e.preventDefault();
+            hideModal();
+            const response = await fetch("/api/createOfficial", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    ['Табельный номер']: inpTabNum.value,
+                    ['ФИО']: inpfio.value,
+                    ['Административная должность']: inprank.value,
+                    ['Должностные обязанности']: inprespons.value
+                })
+            });
+            if (response.ok === true) {
+                const officials = await response.json();
+                if (officials.err) {
+                    switch (officials.err.number) {
+                        case 229:
+                            alert('У вас недостаточно прав')
+                            break;
+
+                        case 547:
+                            alert('Ошибка целостности')
+                            break;
+                        default:
+                            alert(officials.err.message)
+                            break;
+                    }
+                } else if (officials.infoMessage) {
+                    if (officials.infoMessage.message === triggerMessage) {
+                        document.querySelector("#tbody1").append(row(officials.result));
+                    }
+                    alert(officials.infoMessage.message);
+                }
+            }
         }
     })
 }
@@ -113,6 +137,8 @@ async function editOfficial(tubnum) {
 
 
 async function deleteOfficial(tabNum) {
+    let triggerMessage = 'Данные добавлены в таблицу "Удаленные должностные лица"';
+    console.log(tabNum.infoMessage)
     const response = await fetch("/api/officials/" + tabNum, {
         method: "DELETE",
         headers: {
@@ -121,7 +147,26 @@ async function deleteOfficial(tabNum) {
     });
     if (response.ok === true) {
         const tabNum = await response.json();
-        document.querySelector("tr[data-rowid='" + tabNum + "']").remove();
+        if (tabNum.err) {
+            switch (tabNum.err.number) {
+                case 229:
+                    alert('У вас недостаточно прав')
+                    break;
+
+                case 547:
+                    alert('Ошибка целостности')
+                    break;
+                default:
+                    alert(tabNum.err.message)
+                    break;
+            }
+        }
+        else if (tabNum.infoMessage) {
+            if(tabNum.infoMessage.message === triggerMessage) {
+                document.querySelector("tr[data-rowid='" + tabNum.idFind + "']").remove();
+            }
+            alert(tabNum.infoMessage.message);
+        }
     }
 }
 

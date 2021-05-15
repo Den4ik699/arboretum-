@@ -1,5 +1,5 @@
 async function GetClientRequest() {
-    const response = await fetch("/api/plants", {
+    const response = await fetch("/api/registrationCard", {
         method: "GET",
         headers: {
             "Accept": "application/json"
@@ -20,19 +20,15 @@ async function GetClientRequest() {
     }
 }
 
-async function createPlant() {
+async function createRegistrationCard() {
     const modal = document.querySelector('.decor');
     const inpUniqNum = document.querySelector('#inpUniqNum'),
         inpNamePlant = document.querySelector('#inpNamePlant'),
         inpSystLocation = document.querySelector('#inpSystLocation'),
         inpLife = document.querySelector('#inpLife'),
-        inpBioDescr = document.querySelector('#inpBioDescr'),
-        inpEcoDescr = document.querySelector('#inpEcoDescr'),
         inpDateOfLand = document.querySelector('#inpDateOfLand'),
         inpInfWrOff = document.querySelector('#inpInfWrOff'),
         inpLocaton = document.querySelector('#inpLocaton'),
-        inpUsing = document.querySelector('#inpUsing'),
-        inpNumOfreg = document.querySelector('#inpNumOfreg'),
 
         inpBtnAdd = document.querySelector('#inpBtnAdd'),
         close = document.querySelector('.close');
@@ -54,7 +50,7 @@ async function createPlant() {
     inpBtnAdd.addEventListener('click', async (e) => {
         e.preventDefault();
         hideModal();
-        const response = await fetch("/api/createPlant", {
+        const response = await fetch("/api/createRegistrationCard", {
             method: "POST",
             headers: {
                 "Accept": "application/json",
@@ -65,66 +61,38 @@ async function createPlant() {
                 ['Название растения']: inpNamePlant.value,
                 ['Систематическое положение']: inpSystLocation.value,
                 ['Жизненная форма']: inpLife.value,
-                ['Биологическое описание']: inpBioDescr.value,
-                ['Экологическое описание']: inpEcoDescr.value,
                 ['Дата посадки']: inpDateOfLand.value,
                 ['Информация о списании']: inpInfWrOff.value,
                 ['Местоположение в дендропарке']: inpLocaton.value,
-                ['Применение']: inpUsing.value,
-                ['Номер региона']: inpNumOfreg.value
             })
         });
         if (response.ok === true) {
             const user = await response.json();
-
-            if (user.err) {
-                switch (user.err.number) {
-                    case 229:
-                        alert('У вас недостаточно прав')
-                        break;
-
-                    case 547:
-                        alert('Ошибка целостности')
-                        break;
-                    default:
-                        alert(user.err.message)
-                        break;
-                }
-            }
-            else if (user.infoMessage) {
-                alert(user.infoMessage.message);
-            }
-            else {
-                document.querySelector("#tbody1").append(row(user));
-            }
+            document.querySelector("#tbody1").append(row(user));
         }
     })
 }
 
-async function editPlant(id) {
-    const response = await fetch("/api/getPlant/" + id, {
+async function editRegistrationCard(id) {
+    const response = await fetch("/api/getRegistrationCard/" + id, {
         method: "GET",
         headers: {
             "Accept": "application/json"
         }
     });
-    let uniqNum, namePlant, systLocation, life, bioDescr, ecoDescr, dateOfLand, infWrOff, location, using,numOfreg;
+    let uniqNum, namePlant, systLocation, life, dateOfLand, infWrOff, location;
     if (response.ok === true) {
         const getPlant = await response.json();
         uniqNum = getPlant['Уникальный номер'];
         namePlant = getPlant['Название растения'];
         systLocation = getPlant['Систематическое положение'];
         life = getPlant['Жизненная форма'];
-        bioDescr = getPlant['Биологическое описание'];
-        ecoDescr = getPlant['Экологическое описание'];
         dateOfLand = getPlant['Дата посадки'];
         infWrOff = getPlant['Информация о списании'];
         location = getPlant['Местоположение в дендропарке'];
-        using = getPlant['Применение'];
-        numOfreg = getPlant['Номер региона'];
     }
 
-    const editResponse = await fetch("/api/editPlants/", {
+    const editResponse = await fetch("/api/editRegistrationCard/", {
         method: "PUT",
         headers: {
             "Accept": "application/json",
@@ -135,13 +103,9 @@ async function editPlant(id) {
             ['Название растения']: prompt('Введите название растения', `${namePlant}`),
             ['Систематическое положение']: prompt('Введите Систематическое положение', `${systLocation}`),
             ['Жизненная форма']: prompt('Введите Жизненную форму', `${life}`),
-            ['Биологическое описание']: prompt('Введите Биологическое описание', `${bioDescr}`),
-            ['Экологическое описание']: prompt('Введите Экологическое описание', `${ecoDescr}`),
             ['Дата посадки']: prompt('Введите Дату посадки', `${dateOfLand}`),
             ['Информация о списании']: prompt('Введите Информацию о списании', `${infWrOff}`),
             ['Местоположение в дендропарке']: prompt('Введите Местоположение в дендропарке', `${location}`),
-            ['Применение']: prompt('Введите Применение', `${using}`),
-            ['Номер региона']: prompt('Введите Номер региона', `${numOfreg}`),
 
         })
     });
@@ -151,8 +115,8 @@ async function editPlant(id) {
     }
 }
 
-async function deletePlant(id) {
-    const response = await fetch("/api/getPlant/" + id, {
+async function deleteRegistrationCard(id) {
+    const response = await fetch("/api/getRegistrationCard/" + id, {
         method: "DELETE",
         headers: {
             "Accept": "application/json"
@@ -193,7 +157,7 @@ function row(plants) {
     editLink.addEventListener("click", e => {
 
         e.preventDefault();
-        editPlant(plants['Уникальный номер']);
+        editRegistrationCard(plants['Уникальный номер']);
     });
     linksTd.append(editLink);
 
@@ -207,7 +171,7 @@ function row(plants) {
 
         let confDelItem = confirm("Вы уверены, что хотите удалить запись?");
         if (confDelItem) {
-            deletePlant(plants['Уникальный номер']);
+            deleteRegistrationCard(plants['Уникальный номер']);
         }
     });
 
